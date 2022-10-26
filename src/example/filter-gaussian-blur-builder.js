@@ -8,19 +8,16 @@ export default class FilterGaussianBlurBuilder extends FilterBuilder
         super("Gaussian Blur", FilterGaussianBlur)
     }
 
-    render(settings){
-        super.render(settings)
-        settings.inputValue = Builder.Instance.createElement('input', {
-            type: "number",
-            value: 15
-        }, settings)
-        settings.inputValue.addEventListener('input', ()=>{
-            Builder.Instance.update()
+    render(){
+        super.render()
+        this.settings.inputValue = this.createInput({
+            value: 10,
+            type: "number"
         })
     }
 
-    update(filter, settings, index){
-        super.update(filter, settings, index)
-        filter.blur = settings.inputValue.value
+    update(){
+        super.update()
+        this.filter.blur = this.settings.inputValue.value
     }
 }

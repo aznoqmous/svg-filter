@@ -1,17 +1,28 @@
-import FilterBlend from "../filter-blend";
+import FilterComposite from "../filter-composite";
 import Builder from "./builder";
 import FilterBuilder from "./filter-builder";
 
-export default class FilterBlendBuilder extends FilterBuilder
+export default class FilterCompositeBuilder extends FilterBuilder
 {
     constructor(){
-        super("Blend", FilterBlend)
+        super("Composite", FilterComposite)
     }
 
     render(){
         super.render()
         this.in2Input = this.createInputSelector(this.settings)
         this.in2Input.addEventListener('change', ()=> Builder.Instance.update())
+
+        this.operatorSelect = Builder.Instance.createSelect({
+            over: "over", 
+            in: "in", 
+            out: "out", 
+            atop: "atop", 
+            xor: "xor", 
+            arithmetic: "arithmetic", 
+            lighter: "lighter"
+        }, this.settings)
+        this.operatorSelect.addEventListener('change', ()=> Builder.Instance.update())
     }
 
     update(){
@@ -21,6 +32,8 @@ export default class FilterBlendBuilder extends FilterBuilder
         let inputFilter = Builder.Instance.getFilterByName(this.in2Input.selectedOptions[0].value)
         if(selected == "SourceGraphic")  this.filter.element.setAttribute('in2', "SourceGraphic")
         else this.filter.in2 = inputFilter
+
+        this.filter.operator = this.operatorSelect.selectedOptions[0].value
     }
 
     updateInputSelector(){

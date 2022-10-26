@@ -1,10 +1,10 @@
 import Filter from "./filter";
 
 export default class FilterGaussianBlur extends Filter {
-    constructor(value=10){
+    constructor(name, value=10){
         super("feGaussianBlur", {
             stdDeviation: value
-        }, true)
+        }, name)
     }
     
     set blur(v){

@@ -1,8 +1,8 @@
 import Utils from "./utils"
 
 export default class Filter {
-    constructor(type="feGaussianBlur", attributes={}){
-        this.name = Utils.getUuid("filter")
+    constructor(type="feGaussianBlur", attributes={}, name=null){
+        this.name = name || Utils.getUuid("filter")
         this.element = this.createSVGElement(type, attributes)
         this.element.setAttribute('result', this.name)
 
@@ -11,11 +11,16 @@ export default class Filter {
 
     set in(filter){
         this._inFilter = filter
-        this.element.setAttribute('in', filter.name)
+        if(!filter) this.element.removeAttribute('in')
+        else this.element.setAttribute('in', filter.name)
     }
     
     get in(){
         return this._inFilter
+    }
+
+    addFilter(filter){
+        this.element.appendChild(filter.element)
     }
 
     createSVGElement(tagName, attributes={}, parent=null){

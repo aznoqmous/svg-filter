@@ -1,23 +1,42 @@
+import FilterColorMatrix from "../filter-color-matrix"
+import FilterGaussianBlur from "../filter-gaussian-blur"
 import SvgFilter from "../svg-filter"
 import Utils from "../utils"
 import FilterBlendBuilder from "./filter-blend-builder"
+import FilterBuilder from "./filter-builder"
 import FilterColorMatrixBuilder from "./filter-color-matrix-builder"
+import FilterCompositeBuilder from "./filter-composite-builder"
+import FilterDiffuseLightingBuilder from "./filter-diffuse-lighting-builder"
+import FilterDisplacementMapBuilder from "./filter-displacement-map-builder"
 import FilterGaussianBlurBuilder from "./filter-gaussian-blur-builder"
 import FilterOffsetBuilder from "./filter-offset-builder"
+import FilterSpecularLightingBuilder from "./filter-specular-lighting-builder"
+import FilterTurbulenceBuilder from "./filter-turbulence-builder"
 
 export default class Builder {
     constructor(){
         this.constructor._instance = this
-        this.filters = []
         this.testName = "testFilter"
         this.build()
         this.bind()
-        this.filterTypes = [
-            new FilterGaussianBlurBuilder(),
-            new FilterColorMatrixBuilder(),
-            new FilterOffsetBuilder(),
-            new FilterBlendBuilder()
+        this.filterBuilderTypes = [
+            FilterGaussianBlurBuilder,
+            FilterColorMatrixBuilder,
+            FilterOffsetBuilder,
+            FilterSpecularLightingBuilder,
+            FilterDiffuseLightingBuilder,
+            FilterCompositeBuilder,
+            FilterBlendBuilder,
+            FilterTurbulenceBuilder,
+            FilterDisplacementMapBuilder
         ]
+        this.filterBuilderLabels = this.filterBuilderTypes.map(c => (new c()).label)
+        this.filterBuilders = []
+        
+    }
+
+    get filters(){
+        return this.filterBuilders.map(fb => fb.filter)
     }
 
     build(){
@@ -36,76 +55,40 @@ export default class Builder {
         })
         this.addButton.addEventListener('click', (e)=> {
             e.preventDefault()
-            this.addFilter()
+            this.addFilterBuilder()
         })
     }
 
-    addFilter(){
-        let element = document.createElement('form')
-        element.className = "filter"
-        element.innerHTML = this.template.innerHTML
-        element.typeSelect = element.querySelector('[name="type"]')
-        element.settingsElement = element.querySelector('.settings')
 
-        this.filterTypes.map((props,i) => {
-            element.typeSelect.add(new Option(props.label, props.label, !i))
-        })
+    removeFilterBuilder(filterBuilder){
+        this.filterBuilders.splice(this.filterBuilders.indexOf(filterBuilder), 1)
+    }
 
-        element.typeSelect.addEventListener('change', ()=>{
-            this.renderElement(element)
-            this.update()
-        })
+    addFilterBuilder(){
+        let filterBuilder = new FilterBuilder()
+        filterBuilder.loadBuilder(this.filterBuilderTypes[0])
+        filterBuilder.build()
+        this.filterBuilders.push(filterBuilder)
+        this.filtersContainer.appendChild(filterBuilder.element)
 
-        element.querySelector('.delete').addEventListener('click', ()=>{
-            element.remove()
-            this.update()
-        })
-
-        this.renderElement(element)
-
-        this.filtersContainer.appendChild(element)
-
+        this.filterBuilders.map(fb => fb.updateInputSelector())
         this.update()
     }
 
-    renderElement(element){
-        element.settingsElement.innerHTML = ""
-        let filterType = this.getFilterTypeByLabel(element.typeSelect.selectedOptions[0].value)
-        filterType.render(element.settingsElement)
+    getFilterBuilderByLabel(label){
+        return this.filterBuilderTypes[this.filterBuilderLabels.indexOf(label)]
     }
 
-    getFilterTypeByLabel(label){
-        let match = this.filterTypes.filter(f => f.label == label)
-        return match.length ? match[0] : null
-    }
-
-    getFilterTypeByConstructor(constructorName){
-        let match = this.filterTypes.filter(f => f.class.name == constructorName)
-        return match.length ? match[0] : null
-    }
-
-    getFilterByName(name){
-        let match = this.filters.filter(f => f.name == constructorName)
+    getFilterByName(filterName){
+        let match = this.filters.filter(f => f.name == filterName)
         return match.length ? match[0] : null
     }
 
     update(){
-        Utils.resetUuids()
-        this.filters = []
-        this.lastFilter = null
-        this.svgFilter.filters.innerHTML = ""
-        ;[...this.filtersContainer.children].map((element,i) => {
-            let filterType = this.getFilterTypeByLabel(element.typeSelect.selectedOptions[0].value)
-            let filter = new filterType.class()
-            this.filters.push(filter)
-        })
-        ;[...this.filtersContainer.children].map((element,i) => {
-            let filter = this.filters[i]
-            let filterType = this.getFilterTypeByConstructor(filter.constructor.name)
-            filterType.update(filter, element.settingsElement, i)
-            this.svgFilter.filters.appendChild(filter.element)
-            this.lastFilter  = filter
-        })
+        this.filterBuilders.map(fb => fb.update())
+
+        this.svgFilter.setFilters(this.filters)
+
         this.updateResult()
     }
 
@@ -140,8 +123,22 @@ export default class Builder {
         return element
     }
 
+    createSelect(objKeyValues, parent=null){
+        let select = this.createElement('select', {}, parent)
+        Object.keys(objKeyValues).map((key, i) => {
+            select.add(new Option(objKeyValues[key], key, !i,!i))
+        })
+        return select
+    }
+
+    reorderBuilders(){
+        this.filterBuilders = [...this.filtersContainer.children].map(element => element.filterBuilder)
+        this.update()
+    }
+
     static get Instance(){
         if(!this._instance) this._instance = new this()
         return this._instance
     }
+
 }

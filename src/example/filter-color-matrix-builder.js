@@ -8,25 +8,25 @@ export default class FilterColorMatrixBuilder extends FilterBuilder
         super("Color Matrix", FilterColorMatrix)
     }
 
-    render(settings){
-        super.render(settings)
-        settings.inputValue = Builder.Instance.createElement('textarea', {
+    render(){
+        super.render()
+        this.settings.inputValue = Builder.Instance.createElement('textarea', {
             type: "number"
-        }, settings)
-        settings.inputValue.value = [
+        }, this.settings)
+        this.settings.inputValue.value = [
             1,0,0,0,0,
             0,1,0,0,0,
             0,0,1,0,0,
             0,0,0,19,-10
         ].join(' ')
-        settings.inputValue.addEventListener('input', ()=>{
+        this.settings.inputValue.addEventListener('input', ()=>{
             Builder.Instance.update()
         })
     }
 
-    update(filter, settings, index){
-        super.update(filter, settings, index)
-        if(Builder.Instance.lastFilter) filter.in = Builder.Instance.lastFilter
-        filter.values = settings.inputValue.value.split(' ')
+    update(){
+        super.update()
+        if(Builder.Instance.lastFilter) this.filter.in = Builder.Instance.lastFilter
+        this.filter.values = this.settings.inputValue.value.split(' ')
     }
 }

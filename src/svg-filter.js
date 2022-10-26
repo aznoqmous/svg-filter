@@ -24,4 +24,12 @@ export default class SvgFilter {
         if(parent) parent.appendChild(element)
         return element
     }
+
+    setFilters(filters=[]){
+        this.filters.innerHTML = ""
+        filters.map(filter => this.addFilter(filter))
+    }
+    addFilter(filter){
+        this.filters.appendChild(filter.element)
+    }
 }

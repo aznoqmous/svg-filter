@@ -1,11 +1,11 @@
 import Filter from "./filter";
 
 export default class FilterColorMatrix extends Filter {
-    constructor(values=[]){
+    constructor(name, values=[]){
         super("feColorMatrix", {
             mode: "matrix",
             values: values.join(' ')
-        })
+        }, name)
     }
 
     set values(v){

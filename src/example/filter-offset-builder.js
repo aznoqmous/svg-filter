@@ -8,27 +8,27 @@ export default class FilterOffsetBuilder extends FilterBuilder
         super("Offset", FilterOffset)
     }
 
-    render(settings){
-        super.render(settings)
-        settings.inputXValue = Builder.Instance.createElement('input', {
+    render(){
+        super.render()
+        this.settings.inputXValue = Builder.Instance.createElement('input', {
             type: "number",
             value: 15
-        }, settings)
-        settings.inputXValue.addEventListener('input', ()=>{
+        }, this.settings)
+        this.settings.inputXValue.addEventListener('input', ()=>{
             Builder.Instance.update()
         })
-        settings.inputYValue = Builder.Instance.createElement('input', {
+        this.settings.inputYValue = Builder.Instance.createElement('input', {
             type: "number",
             value: 15
-        }, settings)
-        settings.inputYValue.addEventListener('input', ()=>{
+        }, this.settings)
+        this.settings.inputYValue.addEventListener('input', ()=>{
             Builder.Instance.update()
         })
     }
 
-    update(filter, settings, index){
-        super.update(filter, settings, index)
-        filter.x = settings.inputXValue.value || 0
-        filter.y = settings.inputYValue.value || 0
+    update(){
+        super.update()
+        this.filter.x = this.settings.inputXValue.value || 0
+        this.filter.y = this.settings.inputYValue.value || 0
     }
 }
