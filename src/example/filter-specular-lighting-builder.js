@@ -7,7 +7,14 @@ import FilterBuilder from "./filter-builder";
 export default class FilterSpecularLightingBuilder extends FilterBuilder
 {
     constructor(){
-        super("Specular Lighting", FilterSpecularLighting)
+        super("Specular Lighting", FilterSpecularLighting, {
+            lightingColor: {
+                type: "text"
+            },
+            surfaceScale: {},
+            specularConstant: {},
+            specularExponent: {}
+        })
     }
 
     render(){
@@ -16,26 +23,6 @@ export default class FilterSpecularLightingBuilder extends FilterBuilder
             spot: new FilterSpotLight(this.filter.name + "_spot") 
         }
         super.render()
-
-        this.lightingColorInput = this.createInput({
-            type: "text",
-            value: this.filter.lightingColor
-        })
-        this.surfaceScaleInput = this.createInput({
-            type: "number",
-            value: this.filter.surfaceScale,
-            step: 0.1
-        })
-        this.specularConstantInput = this.createInput({
-            type: "number",
-            value: this.filter.specularConstant,
-            step: 0.1
-        })
-        this.specularExponentInput = this.createInput({
-            type: "number",
-            value: this.filter.specularExponent,
-            step: 0.1
-        })
 
         this.lightSelect = Builder.Instance.createSelect(
             Object.fromEntries(Object.keys(this.lights).map(key=> [key,key])),
@@ -77,14 +64,7 @@ export default class FilterSpecularLightingBuilder extends FilterBuilder
         }
     }
 
-    update(){
-        super.update()
-
-        this.filter.lightingColor = this.lightingColorInput.value
-        this.filter.surfaceScale = this.surfaceScaleInput.value
-        this.filter.specularConstant = this.specularConstantInput.value
-        this.filter.specularExponent = this.specularExponentInput.value
-
+    onUpdate(){
         this.filter.light.x = this.lightInputs.x.value
         this.filter.light.y = this.lightInputs.y.value
         this.filter.light.z = this.lightInputs.z.value

@@ -1,11 +1,13 @@
+import SvgFilter from "../svg-filter"
 import Builder from "./builder"
 import Draggable from "./draggable"
 
 export default class FilterBuilder {
-    constructor(label, filterClass=null){
-        this.class = filterClass
+    constructor(label, filterClass=null, fieldsConfiguration={}){
         this.label = label
+        this.class = filterClass
         this.inputFilterName = null
+        this.fieldsConfiguration = fieldsConfiguration
     }
     
     build(){
@@ -15,10 +17,15 @@ export default class FilterBuilder {
         this.element.innerHTML = Builder.Instance.template.innerHTML
         this.element.typeSelect = this.element.querySelector('[name="type"]')
         this.settings = this.element.querySelector('.settings')
+        this.previewContainer = this.element.querySelector('.preview')
         this.drag = this.element.querySelector('.drag')
 
-        let draggable = Draggable.bind(this.drag, this.element)
+        Draggable.bind(this.drag, this.element)
+        this.element.addEventListener('dragstart', ()=>{
+            this.element.style.opacity = 0.5
+        })
         this.element.addEventListener('dragend', ()=>{
+            this.element.style.opacity = 1
             Builder.Instance.reorderBuilders()
         })
 
@@ -37,7 +44,7 @@ export default class FilterBuilder {
         this.element.querySelector('.delete').addEventListener('click', ()=>{
             this.element.remove()
             Builder.Instance.removeFilterBuilder(this)
-            Builder.Instance.filterBuilders.map(fb => fb.updateInputSelector())
+            Builder.Instance.filterBuilders.map(fb => fb.updateFilterSelectors())
             Builder.Instance.update()
         })
 
@@ -54,21 +61,43 @@ export default class FilterBuilder {
         let builder = new filterBuilderClass()
         this.render = filterBuilderClass.prototype.render
         this.update = filterBuilderClass.prototype.update
+        this.onUpdate = filterBuilderClass.prototype.onUpdate
         this.buildLightSettings = filterBuilderClass.prototype.buildLightSettings
+        this.fieldsConfiguration = builder.fieldsConfiguration
+        this.fields = {}
         this.setFilter(builder.class)
     }
 
     render(){
+        this.buildPreview()
+
         this.settings.innerHTML = ""
-        this.inInput = this.createInputSelector(this.settings)
-        this.inInput.addEventListener('change', ()=> Builder.Instance.update())
+
+        /* Generate filter fields */
+        this.fields = {}
+        Object.keys(this.fieldsConfiguration).map(key => {
+            let config = this.fieldsConfiguration[key]
+            this.fields[key] = this.createField(key, config)
+        })
     }
 
     update(){
-        let selected = this.inInput.selectedOptions[0].value
-        let inputFilter = Builder.Instance.getFilterByName(this.inInput.selectedOptions[0].value)
-        if(selected == "SourceGraphic")  this.filter.element.setAttribute('in', "SourceGraphic")
-        else this.filter.in = inputFilter
+        Object.keys(this.fields).map(key => {
+            let config = this.fields[key].config
+            let value = this.getFieldValue(this.fields[key])
+            if(config.type == "filter"){
+                if(!value) return this.filter.element.removeAttribute(key)
+                if(!value.name) return this.filter.element.setAttribute(key, value)
+            }
+            this.filter[key] = value
+        })
+        console.log("UPDATE")
+        this.onUpdate()
+        this.updatePreview()
+    }
+
+    onUpdate(){
+        // do your things
     }
 
     createInputSelector(parent=null){
@@ -86,18 +115,12 @@ export default class FilterBuilder {
         return element
     }
 
-    updateInputSelector(){
-        let selected = this.inInput ? this.inInput.selectedOptions[0].value : null
-        this.inInput.innerHTML = ""
-        let values = [
-            "", "SourceGraphic",
-            ...Builder.Instance.filters
-            .map(f => f.name)
-            .filter(name => name != this.filter.name)
-        ]
-        values
-        .map(value => {
-            this.inInput.add(new Option(value, value, value == selected, value == selected))
+    updateFilterSelectors(){
+        Object.values(this.fields).filter(f => f.config.type == "filter")
+        .map(field => {
+            let selected = field.selectedOptions[0].value
+            field.config.value = selected
+            this.setFilterSelectorOptions(field)
         })
     }
 
@@ -105,5 +128,97 @@ export default class FilterBuilder {
         let input = Builder.Instance.createElement('input', attributes, parent || this.settings)
         input.addEventListener('input', ()=> Builder.Instance.update())
         return input
+    }
+
+    createField(key, config){
+        let container = Builder.Instance.createElement('div', {class: "input-group"}, this.settings)
+        let label = Builder.Instance.createElement('strong', {}, container)
+        label.innerHTML = key
+        let attributes = Object.assign({
+            element: "input",
+            type: "number",
+            step: 1
+        }, config)
+        let tagName = attributes.element
+        delete attributes.tagName
+
+        let element = Builder.Instance.createElement(tagName, attributes, container)
+        element.addEventListener('input', ()=> Builder.Instance.update())
+        element.value = this.filter[key]
+        element.config = config
+        element.key = key
+        switch(tagName){
+            case "select":
+                this.setFilterSelectorOptions(element)
+            default:
+                break;
+        }
+        return element
+    }
+
+    setFilterSelectorOptions(element){
+        element.innerHTML = ""
+        let config = element.config
+        if(config.type == "filter") config.options = this.getFilterSelectorValues()
+        Object.keys(config.options).map((key, i) => {
+            let value = config.options[key]
+            let selected = config.value ? config.value == value : !i
+            element.add(new Option(value, key, selected, selected))
+        })
+    }
+
+    getFieldValue(field){
+        if(field.config.isTypeSelector){
+            let value = field.selectedOptions.length ? field.selectedOptions[0].value : null
+            return Builder.Instance.getFilterByName(value)
+        }
+        
+        let value;
+        switch(field.tagName){
+            case "select":
+                value = field.selectedOptions.length ? field.selectedOptions[0].value : null
+                break;
+            default:
+                value = field.value
+                break;
+        }
+        return value;
+    }
+
+    getFilterSelectorValues(){
+        return Object.fromEntries(
+            [
+                "", 
+                "SourceGraphic",
+                ...Builder.Instance.filters
+                .map(f => f.name)
+            ]
+            .filter(name => name != this.filter.name)
+            .map(name => [name, name])
+        )
+    }
+
+    buildPreview(){
+        this.svgFilter = new SvgFilter(this.filter.name + "_preview")
+        this.updatePreview()
+    }
+
+    updatePreview(){
+        this.previewContainer.innerHTML = ""
+        this.previewElement = Builder.Instance.testElement.cloneNode(true)
+        this.previewElement.style.filter = `url(#${this.filter.name + "_preview"})`
+        this.previewContainer.appendChild(this.previewElement)
+        let filters = this.getPreviousFilters()
+        filters.push(this.filter)
+        console.log(filters)
+        this.svgFilter.filters.innerHTML = ""
+        this.svgFilter.addFilterClones(filters)
+        this.previewContainer.appendChild(this.svgFilter.svg)
+    }
+
+    getPreviousFilters(){
+        let index = Builder.Instance.filters.map(f => f.name).indexOf(this.filter.name)
+        if(index == -1) return Builder.Instance.filters
+        return Builder.Instance.filters.slice(0, index)
     }
 }

@@ -21,6 +21,11 @@
             display: flex;
             flex-wrap: wrap;
         }
+        img {
+            width: 256px;
+            height: 256px;
+            object-fit: cover;
+        }
         figure {
             width: 256px;
             height: 256px;
@@ -31,7 +36,16 @@
         }
         
         .examples > * {
-            filter: url(#testFilter)
+            filter: url(#testFilter);
+            width: 256px;
+            height: 256px;
+        }
+        .stacked {
+            position: relative;
+        }
+        .stacked > * {
+            position: absolute;
+            inset: 0;
         }
         .container {
             margin-top: 4rem;
@@ -58,8 +72,18 @@
             cursor: pointer;
             font-size: 0.8rem;
         }
-        .filter .delete {
+        .filter .preview {
             margin-left: auto;
+            display: inline-flex;
+            justify-content: center;
+            width: 8rem;
+            height: 8rem;
+            padding: 1rem;
+        }
+        .filter .preview > * {
+            height: 100%;
+            width: 100%;
+        }
         }
         .filter select,
         .filter input,
@@ -81,10 +105,16 @@
 </head>
 <body>
     <div class="examples">
-        <img src="aznoqmous.jpg" alt="">
+        <img src="image.jpg" alt="">
         <img src="test.png" alt="">
         <figure></figure>
-        <div></div>
+        <div class="stacked">
+            <img src="test.png" alt="">
+            <div>
+                <h1>Some text</h1>
+                <p>SVG drawings and images are created using a <em>wide array of elements</em> which are dedicated to the construction, drawing, and layout of <strong>vector images and diagrams</strong>. Here you'll find reference documentation for each of the SVG elements.</p>
+            </div>
+        </div>
     </div>
     <div class="container">
         <input name="name" type="text" value="newFilter">
@@ -95,8 +125,11 @@
                 <select name="type"></select>
                 <div class="settings"></div>
             </div>
-            <span class="button delete">delete</span>
-            <span class="button drag">drag</span>
+            <div class="preview"></div>
+            <div class="actions">
+                <span class="button delete">delete</span>
+                <span class="button drag">drag</span>
+            </div>
         </template>
         <span class="button add">add</button>
     </div>

@@ -12,6 +12,6 @@ export default class FilterGaussianBlur extends Filter {
     }
 
     get blur(){
-        return this.element.getAttribute('stdDeviation')
+        return parseFloat(this.element.getAttribute('stdDeviation'))
     }
 }

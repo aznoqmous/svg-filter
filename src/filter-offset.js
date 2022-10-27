@@ -12,7 +12,7 @@ export default class FilterOffset extends Filter {
     }
 
     get x(){
-        return this.element.getAttribute("dx")
+        return parseFloat(this.element.getAttribute("dx"))
     }
     
     set y(v){
@@ -20,6 +20,6 @@ export default class FilterOffset extends Filter {
     }
 
     get y(){
-        return this.element.getAttribute("dy")
+        return parseFloat(this.element.getAttribute("dy"))
     }
 }

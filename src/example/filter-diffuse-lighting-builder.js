@@ -7,7 +7,17 @@ import FilterBuilder from "./filter-builder";
 export default class FilterDiffuseLightingBuilder extends FilterBuilder
 {
     constructor(){
-        super("Diffuse Lighting", FilterDiffuseLighting)
+        super("Diffuse Lighting", FilterDiffuseLighting, {
+            lightingColor: {
+                type: "text"
+            },
+            surfaceScale: {
+                step: 0.1
+            },
+            diffuseConstant: {
+                step: 0.1
+            }
+        })
     }
 
     render(){
@@ -16,21 +26,6 @@ export default class FilterDiffuseLightingBuilder extends FilterBuilder
             spot: new FilterSpotLight(this.filter.name + "_spot") 
         }
         super.render()
-
-        this.lightingColorInput = this.createInput({
-            type: "text",
-            value: this.filter.lightingColor
-        })
-        this.surfaceScaleInput = this.createInput({
-            type: "number",
-            value: this.filter.surfaceScale,
-            step: 0.1
-        })
-        this.diffuseConstantInput = this.createInput({
-            type: "number",
-            value: this.filter.diffuseConstant,
-            step: 0.1
-        })
 
         this.lightSelect = Builder.Instance.createSelect(
             Object.fromEntries(Object.keys(this.lights).map(key=> [key,key])),
@@ -72,13 +67,7 @@ export default class FilterDiffuseLightingBuilder extends FilterBuilder
         }
     }
 
-    update(){
-        super.update()
-
-        this.filter.lightingColor = this.lightingColorInput.value
-        this.filter.surfaceScale = this.surfaceScaleInput.value
-        this.filter.diffuseConstant = this.diffuseConstantInput.value
-
+    onUpdate(){
         this.filter.light.x = this.lightInputs.x.value
         this.filter.light.y = this.lightInputs.y.value
         this.filter.light.z = this.lightInputs.z.value

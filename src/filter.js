@@ -3,6 +3,7 @@ import Utils from "./utils"
 export default class Filter {
     constructor(type="feGaussianBlur", attributes={}, name=null){
         this.name = name || Utils.getUuid("filter")
+        this.attributes = attributes
         this.element = this.createSVGElement(type, attributes)
         this.element.setAttribute('result', this.name)
 

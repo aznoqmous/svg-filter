@@ -5,19 +5,12 @@ import FilterBuilder from "./filter-builder";
 export default class FilterGaussianBlurBuilder extends FilterBuilder
 {
     constructor(){
-        super("Gaussian Blur", FilterGaussianBlur)
-    }
-
-    render(){
-        super.render()
-        this.settings.inputValue = this.createInput({
-            value: 10,
-            type: "number"
+        super("Gaussian Blur", FilterGaussianBlur, {
+            in: {
+                element: "select",
+                type: "filter"
+            },
+            blur: {}
         })
-    }
-
-    update(){
-        super.update()
-        this.filter.blur = this.settings.inputValue.value
     }
 }

@@ -1,7 +1,7 @@
 import Filter from "./filter";
 
 export default class FilterDisplacementMap extends Filter {
-    constructor(name, input, input2, scale=50, xChannelSelector="R", yChannelSelector="G"){
+    constructor(name, input, input2, scale=10, xChannelSelector="R", yChannelSelector="G"){
         super("feDisplacementMap", {
             in: input,
             in2: input2,

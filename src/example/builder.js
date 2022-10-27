@@ -1,7 +1,4 @@
-import FilterColorMatrix from "../filter-color-matrix"
-import FilterGaussianBlur from "../filter-gaussian-blur"
 import SvgFilter from "../svg-filter"
-import Utils from "../utils"
 import FilterBlendBuilder from "./filter-blend-builder"
 import FilterBuilder from "./filter-builder"
 import FilterColorMatrixBuilder from "./filter-color-matrix-builder"
@@ -9,14 +6,19 @@ import FilterCompositeBuilder from "./filter-composite-builder"
 import FilterDiffuseLightingBuilder from "./filter-diffuse-lighting-builder"
 import FilterDisplacementMapBuilder from "./filter-displacement-map-builder"
 import FilterGaussianBlurBuilder from "./filter-gaussian-blur-builder"
+import FilterHueRotateBuilder from "./filter-hue-rotate-builder"
+import FilterLuminanceToAlphaBuilder from "./filter-luminance-to-alpha-builder"
+import FilterMorphologyBuilder from "./filter-morphology-builder"
 import FilterOffsetBuilder from "./filter-offset-builder"
+import FilterSaturateBuilder from "./filter-saturate-builder"
 import FilterSpecularLightingBuilder from "./filter-specular-lighting-builder"
 import FilterTurbulenceBuilder from "./filter-turbulence-builder"
 
 export default class Builder {
-    constructor(){
+    constructor(testElement){
         this.constructor._instance = this
         this.testName = "testFilter"
+        this.testElement = testElement
         this.build()
         this.bind()
         this.filterBuilderTypes = [
@@ -28,11 +30,14 @@ export default class Builder {
             FilterCompositeBuilder,
             FilterBlendBuilder,
             FilterTurbulenceBuilder,
-            FilterDisplacementMapBuilder
+            FilterDisplacementMapBuilder,
+            FilterSaturateBuilder,
+            FilterHueRotateBuilder,
+            FilterLuminanceToAlphaBuilder,
+            FilterMorphologyBuilder
         ]
         this.filterBuilderLabels = this.filterBuilderTypes.map(c => (new c()).label)
         this.filterBuilders = []
-        
     }
 
     get filters(){
@@ -71,7 +76,7 @@ export default class Builder {
         this.filterBuilders.push(filterBuilder)
         this.filtersContainer.appendChild(filterBuilder.element)
 
-        this.filterBuilders.map(fb => fb.updateInputSelector())
+        this.filterBuilders.map(fb => fb.updateFilterSelectors())
         this.update()
     }
 
@@ -116,6 +121,11 @@ export default class Builder {
         this.svgFilter.name = this.testName
     }
 
+    reorderBuilders(){
+        this.filterBuilders = [...this.filtersContainer.children].map(element => element.filterBuilder)
+        this.update()
+    }
+
     createElement(tagName, attributes={}, parent=null){
         let element = document.createElement(tagName)
         for(let key in attributes) element.setAttribute(key, attributes[key])
@@ -131,10 +141,6 @@ export default class Builder {
         return select
     }
 
-    reorderBuilders(){
-        this.filterBuilders = [...this.filtersContainer.children].map(element => element.filterBuilder)
-        this.update()
-    }
 
     static get Instance(){
         if(!this._instance) this._instance = new this()

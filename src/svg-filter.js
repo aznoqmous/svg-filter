@@ -32,4 +32,11 @@ export default class SvgFilter {
     addFilter(filter){
         this.filters.appendChild(filter.element)
     }
+
+    addFilterClone(filter){
+        this.filters.appendChild(filter.element.cloneNode(true))
+    }
+    addFilterClones(filters){
+        filters.map(filter => this.addFilterClone(filter))
+    }
 }

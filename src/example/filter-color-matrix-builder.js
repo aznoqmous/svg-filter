@@ -5,7 +5,12 @@ import FilterBuilder from "./filter-builder";
 export default class FilterColorMatrixBuilder extends FilterBuilder
 {
     constructor(){
-        super("Color Matrix", FilterColorMatrix)
+        super("Color Matrix", FilterColorMatrix, {
+            in: {
+                element: "select",
+                type: "filter"
+            }
+        })
     }
 
     render(){
@@ -24,9 +29,8 @@ export default class FilterColorMatrixBuilder extends FilterBuilder
         })
     }
 
-    update(){
-        super.update()
-        if(Builder.Instance.lastFilter) this.filter.in = Builder.Instance.lastFilter
+    onUpdate(){
+        console.log("onUpdate", this.settings.inputValue.value)
         this.filter.values = this.settings.inputValue.value.split(' ')
     }
 }

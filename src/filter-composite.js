@@ -1,7 +1,7 @@
 import Filter from "./filter"
 
 export default class FilterComposite extends Filter {
-    constructor(name, operator, input, input2){
+    constructor(name, operator="over", input=null, input2=null){
         super("feComposite", {
             operator, // over, in, out, atop, xor, arithmetic, lighter
             in: input,

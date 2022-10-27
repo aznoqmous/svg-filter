@@ -2,7 +2,7 @@ import Builder from "./example/builder"
 
 document.addEventListener('DOMContentLoaded', ()=>{
 
-    new Builder()
+    new Builder(document.querySelectorAll('.examples > img')[1])
     new Blob(document.querySelector('figure'))
     //let svgFilter = new SvgFilter("testFilter")
 
