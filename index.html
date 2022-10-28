@@ -5,10 +5,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <script src="node_modules/leader-line/leader-line.min.js"></script>
     <script src="dist/main.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap">
     <style>
         * {
+            box-sizing: border-box;
             padding: 0;
             margin: 0;
         }
@@ -16,10 +18,12 @@
             font-family: "DM Sans";
             padding: 2rem;
             background: #efefef;
+            display: flex;
         }
         .examples {
             display: flex;
             flex-wrap: wrap;
+            display: none;
         }
         img {
             width: 256px;
@@ -48,18 +52,64 @@
             inset: 0;
         }
         .container {
-            margin-top: 4rem;
+            width: calc(100% - 30rem);
+        }
+        .resultHTML {
+            width: 30rem;
+        }
+        body > svg:first-of-type {
+            display: none;
         }
         .filters {
             display: flex;
             flex-direction: column;
+            height: 100vh;
+            width: 100%;
+            position: relative;
         }
         .filter {
             display: flex;
+            flex-direction: column;
             margin-bottom: 1rem;
-            background: white;
+            background: rgba(255,255,255,0.9);
+            border: 3px solid white;
             border-radius: 0.5rem;
-            padding: 0.5rem;
+            padding: 1rem;
+            width: 15rem;
+            position: absolute;
+            min-height: 5rem;
+        }
+        .filter.result {
+            right: 0;
+        }
+        .inputs, .outputs {
+            position: absolute;
+            left: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .outputs {
+            left: unset;
+            right: 0;
+        }
+        .output-holder{
+            display: flex;
+            align-items: center;
+        } 
+        .output-holder strong {
+            margin-right: 1rem;
+        }
+        .output-holder .output {
+            margin-left: auto;
+            margin-top: 0;
+        }
+        .input, .output {
+            width: 0.8rem;
+            height: 0.8rem;
+            border-radius: 0.2rem;
+            background: black;
+            margin-top: 0.5rem;
         }
         .name {
             font-weight: bold;
@@ -73,17 +123,19 @@
             font-size: 0.8rem;
         }
         .filter .preview {
-            margin-left: auto;
             display: inline-flex;
             justify-content: center;
-            width: 8rem;
-            height: 8rem;
-            padding: 1rem;
+            width: 100%;
+            height: 13rem;
+            overflow: hidden;
         }
         .filter .preview > * {
             height: 100%;
             width: 100%;
         }
+        .filter.selected {
+            border: 3px solid #eee;
+            outline: 3px solid white;
         }
         .filter select,
         .filter input,
@@ -101,6 +153,9 @@
             display: flex;
             flex-direction: column;
         }
+        .leader-line {
+            z-index: -1;
+        }
     </style>
 </head>
 <body>
@@ -117,6 +172,7 @@
         </div>
     </div>
     <div class="container">
+        <span class="button add">add</span>
         <input name="name" type="text" value="newFilter">
         <div class="filters"></div>
         <template>
@@ -126,12 +182,7 @@
                 <div class="settings"></div>
             </div>
             <div class="preview"></div>
-            <div class="actions">
-                <span class="button delete">delete</span>
-                <span class="button drag">drag</span>
-            </div>
         </template>
-        <span class="button add">add</button>
     </div>
     <pre class="resultHTML">
     </pre>

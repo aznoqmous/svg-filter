@@ -30,7 +30,6 @@ export default class FilterColorMatrixBuilder extends FilterBuilder
     }
 
     onUpdate(){
-        console.log("onUpdate", this.settings.inputValue.value)
         this.filter.values = this.settings.inputValue.value.split(' ')
     }
 }

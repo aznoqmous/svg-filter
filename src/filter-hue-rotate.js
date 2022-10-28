@@ -1,7 +1,7 @@
 import Filter from "./filter";
 
 export default class FilterHueRotate extends Filter {
-    constructor(name, values=0.2){
+    constructor(name, values=90){
         super("feColorMatrix", {
             type: "hueRotate",
             values

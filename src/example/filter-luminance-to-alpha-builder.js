@@ -3,6 +3,11 @@ import FilterBuilder from "./filter-builder";
 
 export default class FilterLuminanceToAlphaBuilder extends FilterBuilder {
     constructor(){
-        super("Luminance to alpha", FilterLuminanceToAlpha)
+        super("Luminance to alpha", FilterLuminanceToAlpha, {
+            in: {
+                element: "select",
+                type: "filter"
+            }
+        })
     }
 }

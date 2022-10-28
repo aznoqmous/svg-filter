@@ -1,6 +1,8 @@
 import SvgFilter from "../svg-filter"
 import Builder from "./builder"
-import Draggable from "./draggable"
+import Draggable from "./Draggable"
+import GraphBox from "./GraphBox"
+import SourceGraphicBuilder from "./source-graphic-builder"
 
 export default class FilterBuilder {
     constructor(label, filterClass=null, fieldsConfiguration={}){
@@ -18,17 +20,7 @@ export default class FilterBuilder {
         this.element.typeSelect = this.element.querySelector('[name="type"]')
         this.settings = this.element.querySelector('.settings')
         this.previewContainer = this.element.querySelector('.preview')
-        this.drag = this.element.querySelector('.drag')
-
-        Draggable.bind(this.drag, this.element)
-        this.element.addEventListener('dragstart', ()=>{
-            this.element.style.opacity = 0.5
-        })
-        this.element.addEventListener('dragend', ()=>{
-            this.element.style.opacity = 1
-            Builder.Instance.reorderBuilders()
-        })
-
+        
         this.name = this.element.querySelector('.name')
         this.name.innerHTML = this.filter.name
         
@@ -41,14 +33,56 @@ export default class FilterBuilder {
             this.render()
             Builder.Instance.update()
         })
-        this.element.querySelector('.delete').addEventListener('click', ()=>{
-            this.element.remove()
-            Builder.Instance.removeFilterBuilder(this)
-            Builder.Instance.filterBuilders.map(fb => fb.updateFilterSelectors())
-            Builder.Instance.update()
+
+        this.GraphBox = new GraphBox(Builder.Instance.selectable, this.element, [], [])
+        this.inputsContainer = Builder.Instance.createElement("div", { class: "inputs"}, this.element)
+        this.outputsContainer = Builder.Instance.createElement("div", { class: "outputs"}, this.element)
+        
+        this.render()
+
+        this.buildInputs()
+        this.buildOutput()
+    }
+
+    buildInputs(){
+        let existingInputs = [...this.inputsContainer.children]
+        let existingInputKeys = existingInputs.map(i => i.key)
+        let fields = this.getInputFields()
+        let fieldKeys = fields.map(f => f.key)
+        let removedInputs = existingInputs.filter(i => !fieldKeys.includes(i.key))
+        let newFields = fields.filter(f => !existingInputKeys.includes(f.key))
+        
+        removedInputs.map(ri => {
+            if(ri.Link) ri.Link.remove()
         })
 
-        this.render()
+        newFields.map(f => {
+            let input = Builder.Instance.createElement('i', {class: "input"}, this.inputsContainer)
+            this.GraphBox.addInput(input)
+            input.key = f.key
+            input.addEventListener('link', (data)=>{
+                this.updateInput(input)
+            })
+        })
+    }
+
+    updateInput(input){
+        if(!input) return;
+        this.fields[input.key].value = this.getLinkedFilterName(input)
+        Builder.Instance.update()
+        Builder.Instance.reorderBuilders()
+    }
+
+    getLinkedFilterName(input){
+        if(input.Link.output.GraphBox.element.filterBuilder.constructor == SourceGraphicBuilder){
+            return input.Link.output.key
+        } 
+        return input.Link.output.GraphBox.element.filterBuilder.filter.name
+    }
+    
+    buildOutput(){
+        this.output = Builder.Instance.createElement('i', { class: "output"}, this.outputsContainer)
+        this.GraphBox.addOutput(this.output)
     }
 
     setFilter(filterClass){
@@ -79,6 +113,8 @@ export default class FilterBuilder {
             let config = this.fieldsConfiguration[key]
             this.fields[key] = this.createField(key, config)
         })
+        this.buildInputs()
+
     }
 
     update(){
@@ -91,7 +127,6 @@ export default class FilterBuilder {
             }
             this.filter[key] = value
         })
-        console.log("UPDATE")
         this.onUpdate()
         this.updatePreview()
     }
@@ -102,13 +137,7 @@ export default class FilterBuilder {
 
     createInputSelector(parent=null){
         let element = Builder.Instance.createElement("select", {}, parent)
-        let values = [
-            "", "SourceGraphic",
-            ...Builder.Instance.filters
-            .map(f => f.name)
-            .filter(name => name != this.filter.name)
-        ]
-        values
+        this.getFilterSelectorValues()
         .map(value => {
             element.add(new Option(value, value))
         })
@@ -116,7 +145,7 @@ export default class FilterBuilder {
     }
 
     updateFilterSelectors(){
-        Object.values(this.fields).filter(f => f.config.type == "filter")
+        this.getInputFields()
         .map(field => {
             let selected = field.selectedOptions[0].value
             field.config.value = selected
@@ -190,6 +219,7 @@ export default class FilterBuilder {
             [
                 "", 
                 "SourceGraphic",
+                "SourceAlpha",
                 ...Builder.Instance.filters
                 .map(f => f.name)
             ]
@@ -205,20 +235,47 @@ export default class FilterBuilder {
 
     updatePreview(){
         this.previewContainer.innerHTML = ""
+        console.log(Object.values(this.getFilterInputValues()))
+        if(Object.values(this.getFilterInputValues()).filter(v => !v).length) return;
         this.previewElement = Builder.Instance.testElement.cloneNode(true)
         this.previewElement.style.filter = `url(#${this.filter.name + "_preview"})`
         this.previewContainer.appendChild(this.previewElement)
         let filters = this.getPreviousFilters()
         filters.push(this.filter)
-        console.log(filters)
         this.svgFilter.filters.innerHTML = ""
         this.svgFilter.addFilterClones(filters)
         this.previewContainer.appendChild(this.svgFilter.svg)
     }
 
     getPreviousFilters(){
+        /*let filters = Builder.Instance.treeWalk(this)
+        filters.push(this)
+        return filters.reverse()*/
         let index = Builder.Instance.filters.map(f => f.name).indexOf(this.filter.name)
         if(index == -1) return Builder.Instance.filters
         return Builder.Instance.filters.slice(0, index)
+    }
+
+    delete(){
+        [...this.inputsContainer.children].map(i => i.Link ? i.Link.remove() : null)
+        ;[...this.outputsContainer.children].map(i => {
+            let links = i?.Links || []
+            links.map(l => l.remove())
+        })
+        this.element.remove()
+        Builder.Instance.removeFilterBuilder(this)
+        Builder.Instance.filterBuilders.map(fb => fb.updateFilterSelectors())
+        Builder.Instance.update()
+    }
+
+    getFilterInputValues(){
+        return Object.fromEntries(this.getInputFields().map(f => [f.key, this.getFieldValue(f)]))
+    }
+    getInputFields(){
+        return Object.values(this.fields).filter(f => f.config.type == "filter")
+    }
+    getInputBuilders(){
+        let inputs = this.GraphBox?.inputs
+        return inputs.map(i => i.Link?.output?.GraphBox?.element?.filterBuilder).filter(i => i)
     }
 }

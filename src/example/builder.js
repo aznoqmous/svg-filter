@@ -13,6 +13,9 @@ import FilterOffsetBuilder from "./filter-offset-builder"
 import FilterSaturateBuilder from "./filter-saturate-builder"
 import FilterSpecularLightingBuilder from "./filter-specular-lighting-builder"
 import FilterTurbulenceBuilder from "./filter-turbulence-builder"
+import ResultBuilder from "./result-builder"
+import Selectable from "./Selectable"
+import SourceGraphicBuilder from "./source-graphic-builder"
 
 export default class Builder {
     constructor(testElement){
@@ -51,10 +54,33 @@ export default class Builder {
         this.svgNameInput = this.container.querySelector('[name="name"')
         this.template = this.container.querySelector('template')
         this.filtersContainer = this.container.querySelector('.filters')
+        this.selectable = new Selectable(this.filtersContainer, {
+            selectBox: {
+                size: "3px",
+                color: "#aaa",
+                style: "dashed",
+                radius: "3px"
+            }
+        })
         this.addButton = this.container.querySelector('.add')
         this.resultContainer = document.querySelector('.resultHTML')
+
+        this.sourceGraphicBuilder = new SourceGraphicBuilder()
+        this.sourceGraphicBuilder.build()
+        this.resultBuilder = new ResultBuilder()
+        this.resultBuilder.build()
     }
+
     bind(){
+        window.addEventListener('keydown', (e)=>{
+            if(e.key == "Delete" || e.key == "BackSpace"){
+                if(this.selectable.selectedElements.length){
+                    this.selectable.selectedElements.map(e => {
+                        e.filterBuilder.delete()
+                    })
+                }
+            }
+        })
         this.svgNameInput.addEventListener('input', ()=>{
             this.updateResult()
         })
@@ -78,6 +104,7 @@ export default class Builder {
 
         this.filterBuilders.map(fb => fb.updateFilterSelectors())
         this.update()
+        this.reorderBuilders()
     }
 
     getFilterBuilderByLabel(label){
@@ -122,8 +149,22 @@ export default class Builder {
     }
 
     reorderBuilders(){
-        this.filterBuilders = [...this.filtersContainer.children].map(element => element.filterBuilder)
+        let tree = this.treeWalk(this.resultBuilder)
+        this.filterBuilders = tree.reverse()
         this.update()
+    }
+
+    treeWalk(current, currentTree=[], level=0){
+        let inputs = current.GraphBox?.inputs
+        if(!inputs && !inputs.length) return currentTree
+        let fbs = inputs.map(i => i.Link?.output?.GraphBox?.element?.filterBuilder).filter(i => i)
+        fbs.map(fb => {
+            if(fb.constructor == SourceGraphicBuilder) return;
+            fb.level = level
+            currentTree.push(fb)
+            return this.treeWalk(fb, currentTree, level+1)
+        })
+        return currentTree
     }
 
     createElement(tagName, attributes={}, parent=null){

@@ -6,6 +6,10 @@ export default class FilterOffsetBuilder extends FilterBuilder
 {
     constructor(){
         super("Offset", FilterOffset, {
+            in: {
+                element: "select",
+                type: "filter"
+            },
             x: {},
             y: {}
         })

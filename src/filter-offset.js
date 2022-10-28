@@ -1,7 +1,7 @@
 import Filter from "./filter";
 
 export default class FilterOffset extends Filter {
-    constructor(name, dx=0, dy=0){
+    constructor(name, dx=10, dy=10){
         super("feOffset", {
             dx, dy
         }, name)

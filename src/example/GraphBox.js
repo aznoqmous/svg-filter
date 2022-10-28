@@ -1,0 +1,169 @@
+import Draggable from "./Draggable"
+
+export default class GraphBox extends EventTarget{
+
+    constructor(selectable, element, inputs, outputs){
+        super()
+
+        this.lineOptions = {
+            color: '#2eb2ff',
+            size: 2,
+            dropShadow: {
+                dx: 0,
+                dy: 1,
+                blur: 1
+            },
+            dash: true
+        }
+
+        this.selectable = selectable
+        this.element = element
+        this.inputs = [...inputs]
+        this.outputs = [...outputs]
+
+        this.registerInstance()
+        this.bindElement()
+        this.bindOutputs()
+        this.bindInputs()
+        this.bindElement()
+    }
+
+    bindElement(){
+        let draggable = new Draggable(this.element, {
+            parentBounds: true
+        })
+        this.element.addEventListener('dragstart', ()=>{
+            if(!this.selectable.selectedElements.includes(this.element)) return;
+            if(this.selectable.selectedElements.length) {
+                this.selectable.selectedElements.map(e => {
+                    if(this.element == e) return;
+                    e.Draggable.startDrag(draggable.mousePosition, false)
+                })
+            }
+        })
+        this.element.addEventListener('selectstart', ()=> this.element.classList.add('selected'))
+        this.element.addEventListener('selectend', ()=> this.element.classList.remove('selected'))
+        
+    }
+
+    addInput(input){
+        if(this.inputs.includes(input)) return;
+        this.inputs.push(input)
+        this.bindInput(input)
+    }
+
+    bindInput(input){
+        input.GraphBox = this
+        input.addEventListener('mouseenter', ()=>{
+            GraphBox.currentInput = input
+        })
+        input.addEventListener('mouseleave', ()=>{
+            GraphBox.currentInput = null
+        })
+    }
+
+    addOutput(output){
+        if(this.outputs.includes(output)) return;
+        this.outputs.push(output)
+        this.bindOutput(output)
+    }
+    bindOutput(output){
+        output.GraphBox = this
+        new Draggable(output)
+        let line;
+        output.addEventListener('dragstart', ()=>{
+            line = new LeaderLine(output.parentElement.parentElement, output, this.lineOptions)
+            output.style.pointerEvents = "none"
+            output.style.opacity = 0
+        })
+        output.addEventListener('drag', ()=>{
+            if(line) line.position()
+            if(GraphBox.currentInput && !this.inputs.includes(GraphBox.currentInput)) {
+                this.link(output, GraphBox.currentInput)
+            }
+        })
+        output.addEventListener('dragend', ()=>{
+            if(line) line.remove()
+            output.Draggable.resetPosition()
+            output.style.pointerEvents = "all"
+            output.style.opacity = 1
+        })
+    }
+
+    bindInputs(){
+        this.inputs.map(input => this.bindInput(input))
+    }
+
+    bindOutputs(){
+        this.outputs.map(output => this.bindOutput(output))
+    }
+
+    link(output, input){
+        new Link(input, output)
+    }
+
+    registerInstance(){
+        if(!GraphBox.instances) GraphBox.instances = []
+        if(!GraphBox.instances.includes(this)) GraphBox.instances.push(this)
+    }
+}
+
+export class Link {
+    constructor(input, output){
+        this.lineOptions = {
+            color: '#2eb2ff',
+            endPlug: 'arrow3',
+            size: 2,
+            dropShadow: {
+                dx: 0,
+                dy: 1,
+                blur: 1
+              }
+        }
+
+        this.input = input
+        this.output = output
+        this.build()
+        this.bind()
+        this.updateLine()
+    }
+
+    build(){
+        if(this.input.Link) this.input.Link.remove()
+
+        this.input.Link = this
+        this.addOutputLink()
+
+        this.Line = new LeaderLine(this.output, this.input, this.lineOptions)
+    }
+
+    bind(){
+        this.callback = ()=> this.updateLine()
+        this.input.dispatchEvent(new CustomEvent("link", {detail: {
+            source: this.output
+        }}))
+        this.output.Draggable.endDrag()
+        this.output.GraphBox.element.addEventListener('drag', this.callback)
+        this.input.GraphBox.element.addEventListener('drag', this.callback)
+    }
+
+    updateLine(){
+        this.Line.position()
+    }
+
+    remove(){
+        this.Line.remove()
+        this.output.GraphBox.element.removeEventListener('drag', this.callback)
+        this.input.GraphBox.element.removeEventListener('drag', this.callback)
+        delete this.input.Link
+        this.removeOutputLink()
+    }
+
+    addOutputLink(){
+        if(!this.output.Links) this.output.Links = []
+        this.output.Links.push(this)
+    }
+    removeOutputLink(){
+        this.output.Links.splice(this.output.Links.indexOf(this), 1)
+    }
+}

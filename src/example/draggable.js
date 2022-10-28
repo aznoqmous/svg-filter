@@ -1,88 +1,112 @@
-export default class Draggable{
-    constructor(dragElement, draggableElement=null){
-        this.dragElement = dragElement
-        this.draggableElement = draggableElement || dragElement
-        
-        this.build()
-        this.bind()
-    }
-    
-    get parent(){
-        return this.draggableElement.parentElement
-    }
+import Vector2 from "./Vector2";
 
-    build(){
-        this.draggableElement.style.userSelect = "none"
+export default class Draggable {
+    constructor(element, opts={}){
+        this.opts = Object.assign({
+            parentBounds: false,
+            gridSize: 0
+        }, opts)
+        this.element = element
+        this.element.Draggable = this
+        this.startPosition = new Vector2()
+        this.currentOffset = new Vector2()
+        this.mousePosition = new Vector2()
+        this.bind()
     }
 
     bind(){
-        this.dragElement.addEventListener('mousedown', (e)=>{
-            this.startDrag(e)
-        })
-        window.addEventListener('mouseup', (e)=>{
-            this.endDrag(e)
-        })
-        window.addEventListener('mousemove', (e)=>{
-            if(this.isDragging) this.handleDrag(e)
-        })
+        this.element.addEventListener('mousedown', this.handleMouseDown.bind(this))
+        window.addEventListener('mousemove', this.handleMouseMove.bind(this))
+        window.addEventListener('mouseup', this.handleMouseUp.bind(this))
     }
 
-    startDrag(e){
+    handleMouseDown(e){
+        if(e.target != this.element && (
+            ['input','select','textarea'].includes(e.target.tagName.toLowerCase())
+            || e.target.Draggable
+        )) return;
+        e.preventDefault()
         if(this.isDragging) return;
-        this.isDragging = true
-        this.update()
-        this.draggableElement.dispatchEvent(new Event('dragstart'))
+        this.startDrag(new Vector2(e.pageX, e.pageY))
     }
 
-    endDrag(e){
+    handleMouseUp(){
+        this.endDrag()
+    }
+
+    handleMouseMove(e){
+        if(!this.isDragging) return;
+        
+        this.mousePosition = new Vector2(e.pageX, e.pageY)
+        this.currentOffset = this.mousePosition.clone().substract(this.startPosition)
+        
+        if(this.bounds) this.applyBounds(this.currentOffset)
+        if(this.opts.gridSize) this.applyGridSize(this.currentOffset)
+
+        this.applyCurrentOffset()
+
+        this.element.dispatchEvent(new Event('drag'))
+    }
+
+    startDrag(position, dispatch=true){
+        this.mousePosition = position
+        this.startPosition = position.clone()
+        this.startPosition.substract(this.currentOffset)
+        this.isDragging = !dispatch
+        if(this.isDragging) return;
+        if(this.opts.parentBounds) this.updateBounds()
+        this.isDragging = true
+        this.element.style.zIndex = 10
+        this.element.dispatchEvent(new Event('dragstart'))
+    }
+    endDrag(){
         if(!this.isDragging) return;
         this.isDragging = false
-        this.draggableElement.dispatchEvent(new Event('dragend'))
+        this.element.style.zIndex = null
+        this.element.dispatchEvent(new Event('dragend'))
     }
 
-    handleDrag(e){
-        let prev = this.previousSibling
-        let next = this.nextSibling
-        if(prev && prev.getBoundingClientRect().bottom > e.pageY){
-            return this.moveUp()
+    updateBounds(){
+        let offset = this.currentOffset
+        
+        this.resetPosition()
+        let bounds = this.element.getBoundingClientRect()
+        this.currentOffset = offset
+        this.applyCurrentOffset()
+
+        let parentBounds = this.element.parentElement.getBoundingClientRect()
+        this.bounds = {
+            min: {
+                x: parentBounds.left - bounds.left, 
+                y: parentBounds.top - bounds.top,
+            }
         }
-        if(next && next.getBoundingClientRect().top < e.pageY){
-            return this.moveDown()
+        this.bounds.max = {
+            x: parentBounds.width - bounds.width + this.bounds.min.x,
+            y: parentBounds.height - bounds.height + this.bounds.min.y,
         }
     }
 
-    moveUp(){
-        this.parent.insertBefore(this.draggableElement, this.previousSibling)
-        this.update()
+    applyBounds(vector){
+        vector.x = Math.max(vector.x, this.bounds.min.x)
+        vector.y = Math.max(vector.y, this.bounds.min.y)
+        vector.x = Math.min(vector.x, this.bounds.max.x)
+        vector.y = Math.min(vector.y, this.bounds.max.y)
+        return vector
     }
 
-    moveDown(){
-        this.parent.insertBefore(this.nextSibling, this.draggableElement)
-        this.update()
+    applyGridSize(vector){
+        vector.x = Math.floor(vector.x/this.opts.gridSize)*this.opts.gridSize
+        vector.y = Math.floor(vector.y/this.opts.gridSize)*this.opts.gridSize
+        return vector
     }
 
-    update(){
-        this.updateSiblings()
-        this.updateIndex()
+    resetPosition(){
+        this.currentOffset = new Vector2()
+        this.applyCurrentOffset()
     }
 
-    updateSiblings(){
-        this.siblings = [...this.draggableElement.parentElement.children]
-    }
-
-    updateIndex(){
-        this.index = this.siblings.indexOf(this.draggableElement)
-    }
-
-    get previousSibling(){
-        return this.siblings[this.index-1]
-    }
-
-    get nextSibling(){
-        return this.siblings[this.index+1]
-    }
-
-    static bind(dragElement, draggableElement=null){
-        return new Draggable(dragElement, draggableElement)
+    applyCurrentOffset(){
+        this.element.style.transform = `translate(${this.currentOffset.x}px, ${this.currentOffset.y}px)`
     }
 }

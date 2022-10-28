@@ -4,6 +4,10 @@ import FilterBuilder from "./filter-builder";
 export default class FilterMorphologyBuilder extends FilterBuilder {
     constructor(){
         super("Morphology", FilterMorphology, {
+            in: {
+                element: "select",
+                type: "filter"
+            },
             operator: {
                 element: "select",
                 options: {
