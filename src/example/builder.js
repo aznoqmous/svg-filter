@@ -3,6 +3,7 @@ import FilterBlendBuilder from "./filter-blend-builder"
 import FilterBuilder from "./filter-builder"
 import FilterColorMatrixBuilder from "./filter-color-matrix-builder"
 import FilterCompositeBuilder from "./filter-composite-builder"
+import FilterConvolveMatrixBuilder from "./filter-convolve-matrix-builder"
 import FilterDiffuseLightingBuilder from "./filter-diffuse-lighting-builder"
 import FilterDisplacementMapBuilder from "./filter-displacement-map-builder"
 import FilterGaussianBlurBuilder from "./filter-gaussian-blur-builder"
@@ -29,6 +30,7 @@ export default class Builder {
             FilterOffsetBuilder,
             
             FilterColorMatrixBuilder,
+            FilterConvolveMatrixBuilder,
             FilterSaturateBuilder,
             FilterHueRotateBuilder,
             FilterLuminanceToAlphaBuilder,
