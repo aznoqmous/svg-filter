@@ -29,7 +29,7 @@ export default class GraphBox extends EventTarget{
     }
 
     bindElement(){
-        let draggable = new Draggable(this.element, {
+        this.Draggable = new Draggable(this.element, {
             parentBounds: true
         })
         this.element.addEventListener('dragstart', ()=>{
@@ -37,7 +37,7 @@ export default class GraphBox extends EventTarget{
             if(this.selectable.selectedElements.length) {
                 this.selectable.selectedElements.map(e => {
                     if(this.element == e) return;
-                    e.Draggable.startDrag(draggable.mousePosition, false)
+                    e.Draggable.startDrag(this.Draggable.mousePosition, false)
                 })
             }
         })

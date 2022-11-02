@@ -1,29 +1,10 @@
 import Builder from "./example/builder"
+import Mouse from "./example/Mouse"
 
 document.addEventListener('DOMContentLoaded', ()=>{
 
     new Builder(document.querySelectorAll('.examples > img')[1])
-    //new Blob(document.querySelector('figure'))
-    //let svgFilter = new SvgFilter("testFilter")
-
-    /*let gaussianBlur = new FilterGaussianBlur(10)
-    gaussianBlur.setIn("SourceGraphic")
-    svgFilter.filters.appendChild(gaussianBlur.element)
-    
-    let colorMatrix = new FilterColorMatrix([
-        1, 0, 0, 0, 0,
-        0, 1, 0, 0, 0,
-        0, 0, 1, 0, 0,
-        0, 0, 0, 19, -10
-    ])
-    svgFilter.filters.appendChild(colorMatrix.element)
-
-    let blend = new Filter("feBlend", {
-        in: "SourceGrapphic",
-        in2: colorMatrix.name
-    })
-    svgFilter.filters.appendChild(blend.element)*/
-
+    Mouse.bind()
 
 })
 

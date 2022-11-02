@@ -1,6 +1,5 @@
 import SvgFilter from "../svg-filter"
 import Builder from "./builder"
-import Draggable from "./Draggable"
 import GraphBox from "./GraphBox"
 import SourceGraphicBuilder from "./source-graphic-builder"
 
@@ -11,7 +10,7 @@ export default class FilterBuilder {
         this.inputFilterName = null
         this.fieldsConfiguration = fieldsConfiguration
     }
-    
+
     build(){
         this.element = document.createElement('form')
         this.element.filterBuilder = this
@@ -25,7 +24,7 @@ export default class FilterBuilder {
         this.name.innerHTML = this.filter.name
         
         Builder.Instance.filterBuilderLabels.map((label,i) => {
-            this.element.typeSelect.add(new Option(label, i, !i))
+            this.element.typeSelect.add(new Option(label, i, this.label == label, this.label == label))
         })
         this.element.typeSelect.addEventListener('change', ()=>{
             let selectedOption = this.element.typeSelect.selectedOptions[0]
@@ -47,14 +46,16 @@ export default class FilterBuilder {
     buildInputs(){
         let existingInputs = [...this.inputsContainer.children]
         let existingInputKeys = existingInputs.map(i => i.key)
-        let fields = this.getInputFields()
+        let fields = this.getFilterInputFields()
         let fieldKeys = fields.map(f => f.key)
         let removedInputs = existingInputs.filter(i => !fieldKeys.includes(i.key))
         let newFields = fields.filter(f => !existingInputKeys.includes(f.key))
         
         removedInputs.map(ri => {
+            ri.remove()
             if(ri.Link) ri.Link.remove()
         })
+
 
         newFields.map(f => {
             let input = Builder.Instance.createElement('i', {class: "input"}, this.inputsContainer)
@@ -64,20 +65,28 @@ export default class FilterBuilder {
                 this.updateInput(input)
             })
         })
+
+        ;[...this.inputsContainer.children].map(input => this.updateInput(input))
     }
 
     updateInput(input){
-        if(!input) return;
+        if(!input || !this.fields[input.key]) return;
         this.fields[input.key].value = this.getLinkedFilterName(input)
         Builder.Instance.update()
         Builder.Instance.reorderBuilders()
+        this.updatePreview()
+    }
+
+    getLinkedOutput(input){
+        return input.Link?.output
     }
 
     getLinkedFilterName(input){
-        if(input.Link.output.GraphBox.element.filterBuilder.constructor == SourceGraphicBuilder){
-            return input.Link.output.key
+        let output = this.getLinkedOutput(input)
+        if(output?.GraphBox?.element.filterBuilder.constructor == SourceGraphicBuilder){
+            return output.key
         } 
-        return input.Link.output.GraphBox.element.filterBuilder.filter.name
+        return output?.GraphBox?.element.filterBuilder.filter.name
     }
     
     buildOutput(){
@@ -93,6 +102,8 @@ export default class FilterBuilder {
 
     loadBuilder(filterBuilderClass){
         let builder = new filterBuilderClass()
+        this.class = filterBuilderClass
+        this.label = Builder.Instance.filterBuilderLabels[Builder.Instance.filterBuilderTypes.indexOf(this.class)]
         this.render = filterBuilderClass.prototype.render
         this.update = filterBuilderClass.prototype.update
         this.onUpdate = filterBuilderClass.prototype.onUpdate
@@ -114,7 +125,6 @@ export default class FilterBuilder {
             this.fields[key] = this.createField(key, config)
         })
         this.buildInputs()
-
     }
 
     update(){
@@ -135,19 +145,10 @@ export default class FilterBuilder {
         // do your things
     }
 
-    createInputSelector(parent=null){
-        let element = Builder.Instance.createElement("select", {}, parent)
-        this.getFilterSelectorValues()
-        .map(value => {
-            element.add(new Option(value, value))
-        })
-        return element
-    }
-
     updateFilterSelectors(){
-        this.getInputFields()
+        this.getFilterInputFields()
         .map(field => {
-            let selected = field.selectedOptions[0].value
+            let selected = field.selectedOptions[0]?.value
             field.config.value = selected
             this.setFilterSelectorOptions(field)
         })
@@ -234,9 +235,9 @@ export default class FilterBuilder {
     }
 
     updatePreview(){
+        console.log(this.label, this.isAllInputConnected)
         this.previewContainer.innerHTML = ""
-        console.log(Object.values(this.getFilterInputValues()))
-        if(Object.values(this.getFilterInputValues()).filter(v => !v).length) return;
+        if(!this.isAllInputConnected) return;
         this.previewElement = Builder.Instance.testElement.cloneNode(true)
         this.previewElement.style.filter = `url(#${this.filter.name + "_preview"})`
         this.previewContainer.appendChild(this.previewElement)
@@ -245,15 +246,6 @@ export default class FilterBuilder {
         this.svgFilter.filters.innerHTML = ""
         this.svgFilter.addFilterClones(filters)
         this.previewContainer.appendChild(this.svgFilter.svg)
-    }
-
-    getPreviousFilters(){
-        /*let filters = Builder.Instance.treeWalk(this)
-        filters.push(this)
-        return filters.reverse()*/
-        let index = Builder.Instance.filters.map(f => f.name).indexOf(this.filter.name)
-        if(index == -1) return Builder.Instance.filters
-        return Builder.Instance.filters.slice(0, index)
     }
 
     delete(){
@@ -268,10 +260,25 @@ export default class FilterBuilder {
         Builder.Instance.update()
     }
 
-    getFilterInputValues(){
-        return Object.fromEntries(this.getInputFields().map(f => [f.key, this.getFieldValue(f)]))
+    getPreviousFilters(){
+        /*let filters = Builder.Instance.treeWalk(this)
+        filters.push(this)
+        filters.reverse()
+        console.log(filters)*/
+
+        let index = Builder.Instance.filters.map(f => f.name).indexOf(this.filter.name)
+        if(index == -1) return Builder.Instance.filters
+        return Builder.Instance.filters.slice(0, index)
     }
-    getInputFields(){
+
+    get isAllInputConnected(){
+        return !Object.values(this.getFilterInputValues()).filter(v => !v).length
+    }
+
+    getFilterInputValues(){
+        return Object.fromEntries(this.getFilterInputFields().map(f => [f.key, this.getFieldValue(f)]))
+    }
+    getFilterInputFields(){
         return Object.values(this.fields).filter(f => f.config.type == "filter")
     }
     getInputBuilders(){

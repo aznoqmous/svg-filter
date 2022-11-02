@@ -13,34 +13,44 @@ import FilterOffsetBuilder from "./filter-offset-builder"
 import FilterSaturateBuilder from "./filter-saturate-builder"
 import FilterSpecularLightingBuilder from "./filter-specular-lighting-builder"
 import FilterTurbulenceBuilder from "./filter-turbulence-builder"
+import Mouse from "./Mouse"
 import ResultBuilder from "./result-builder"
 import Selectable from "./Selectable"
 import SourceGraphicBuilder from "./source-graphic-builder"
+import Vector2 from "./Vector2"
 
 export default class Builder {
     constructor(testElement){
         this.constructor._instance = this
         this.testName = "testFilter"
         this.testElement = testElement
-        this.build()
-        this.bind()
         this.filterBuilderTypes = [
             FilterGaussianBlurBuilder,
-            FilterColorMatrixBuilder,
             FilterOffsetBuilder,
-            FilterSpecularLightingBuilder,
-            FilterDiffuseLightingBuilder,
+            
+            /* Blend */
             FilterCompositeBuilder,
             FilterBlendBuilder,
+
+            /* Lighting */
+            //FilterSpecularLightingBuilder,
+            //FilterDiffuseLightingBuilder,
+
             FilterTurbulenceBuilder,
             FilterDisplacementMapBuilder,
+
+            FilterColorMatrixBuilder,
             FilterSaturateBuilder,
             FilterHueRotateBuilder,
             FilterLuminanceToAlphaBuilder,
+            
+            /* Dilate / Erode */
             FilterMorphologyBuilder
         ]
         this.filterBuilderLabels = this.filterBuilderTypes.map(c => (new c()).label)
         this.filterBuilders = []
+        this.build()
+        this.bind()
     }
 
     get filters(){
@@ -69,6 +79,9 @@ export default class Builder {
         this.sourceGraphicBuilder.build()
         this.resultBuilder = new ResultBuilder()
         this.resultBuilder.build()
+
+        this.buildFilterSelect()
+        this.hideFilterSelect()
     }
 
     bind(){
@@ -80,6 +93,14 @@ export default class Builder {
                     })
                 }
             }
+            if(e.key == " "){
+                e.preventDefault()
+                this.showFilterSelect()
+            }
+        })
+        
+        window.addEventListener('click', ()=>{
+            this.hideFilterSelect()
         })
         this.svgNameInput.addEventListener('input', ()=>{
             this.updateResult()
@@ -90,21 +111,46 @@ export default class Builder {
         })
     }
 
+    buildFilterSelect(){
+        this.filterSelect = this.createElement('ul', {class:"filter-select"}, this.container)
+        this.filterBuilderLabels.map((label, i)=> {
+            let filter = this.createElement("li", {"data-key": i}, this.filterSelect)
+            filter.innerHTML = label
+            filter.addEventListener('click', ()=>{
+                console.log(label)
+                this.addFilterBuilder(Mouse.position, this.filterBuilderTypes[i])
+            })
+        })
+    }
+    showFilterSelect(){
+        let mousePosition = Mouse.position;
+        this.filterSelect.style.left = mousePosition.x+"px"
+        this.filterSelect.style.top = mousePosition.y+"px"
+        this.filterSelect.style.display = null
+    }
+    hideFilterSelect(){
+        this.filterSelect.style.display = "none"
+    }
 
+    
     removeFilterBuilder(filterBuilder){
         this.filterBuilders.splice(this.filterBuilders.indexOf(filterBuilder), 1)
     }
 
-    addFilterBuilder(){
+    addFilterBuilder(position=null, filterBuilderType=null){
+        if(!position) position = new Vector2()
+        if(!filterBuilderType) filterBuilderType = this.filterBuilderTypes[0]
         let filterBuilder = new FilterBuilder()
-        filterBuilder.loadBuilder(this.filterBuilderTypes[0])
+        filterBuilder.loadBuilder(filterBuilderType)
         filterBuilder.build()
         this.filterBuilders.push(filterBuilder)
         this.filtersContainer.appendChild(filterBuilder.element)
-
+        
         this.filterBuilders.map(fb => fb.updateFilterSelectors())
         this.update()
         this.reorderBuilders()
+        
+        filterBuilder.GraphBox.Draggable.setPosition(position)
     }
 
     getFilterBuilderByLabel(label){

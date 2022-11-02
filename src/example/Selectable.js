@@ -10,7 +10,6 @@ export default class Selectable {
             radius: null
         }, opts.selectBox || {})
         this.opts = Object.assign({}, opts)
-        console.log(this)
         this.element = element
         
         this.build()

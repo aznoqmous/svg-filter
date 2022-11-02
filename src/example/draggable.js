@@ -40,12 +40,16 @@ export default class Draggable {
         this.mousePosition = new Vector2(e.pageX, e.pageY)
         this.currentOffset = this.mousePosition.clone().substract(this.startPosition)
         
-        if(this.bounds) this.applyBounds(this.currentOffset)
-        if(this.opts.gridSize) this.applyGridSize(this.currentOffset)
-
-        this.applyCurrentOffset()
+        this.setPosition(this.currentOffset)
 
         this.element.dispatchEvent(new Event('drag'))
+    }
+
+    setPosition(position){
+        this.currentOffset = position
+        if(this.bounds) this.applyBounds(this.currentOffset)
+        if(this.opts.gridSize) this.applyGridSize(this.currentOffset)
+        this.applyCurrentOffset()
     }
 
     startDrag(position, dispatch=true){

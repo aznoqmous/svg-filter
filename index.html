@@ -137,11 +137,6 @@
             border: 3px solid #eee;
             outline: 3px solid white;
         }
-        .filter select,
-        .filter input,
-        .filter textarea {
-            margin-right: 1rem;
-        }
         .resultHTML {
             margin-top: 1rem;
             font-family: 'Courier New', Courier, monospace;
@@ -155,6 +150,28 @@
         }
         .leader-line {
             z-index: -1;
+        }
+        .filter-select {
+            position: fixed;
+            z-index: 10;
+            background: rgba(255,255,255,0.9);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            width: 20rem;
+            transform: translate(-50%, 0);
+        }
+        .filter-select li { 
+            cursor: pointer;
+        }
+
+        .input-group {
+            display: flex;
+            justify-content: space-between;
+        }
+        .input-group select,
+        .input-group input
+        {
+            width: 10rem;
         }
     </style>
 </head>
