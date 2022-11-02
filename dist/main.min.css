@@ -1,0 +1,182 @@
+/*!****************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./scss/style.scss ***!
+  \****************************************************************************************************************************************************/
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0; }
+
+body {
+  font-family: "DM Sans";
+  padding: 2rem;
+  background: #202020;
+  color: #eee;
+  display: flex;
+  font-size: 0.8rem; }
+  body > svg:not(.leader-line) {
+    display: none; }
+
+img {
+  width: 256px;
+  height: 256px;
+  object-fit: cover; }
+
+figure {
+  width: 256px;
+  height: 256px; }
+
+canvas {
+  width: 100%;
+  height: 100%; }
+
+.leader-line {
+  z-index: -1; }
+
+.column {
+  display: flex;
+  flex-direction: column; }
+
+input, select {
+  border: 1px solid #393939;
+  background: #4c4c4c;
+  color: #eee;
+  padding: 0.1rem 0.2rem;
+  border-radius: 0.2rem; }
+  input:focus, select:focus {
+    outline: 2px solid #393939; }
+
+body {
+  overflow: hidden; }
+  body > .examples {
+    display: none; }
+  body > .container {
+    width: calc(100% - 32rem);
+    margin-right: 2rem; }
+    body > .container .filters {
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 7rem);
+      width: 100%;
+      position: relative; }
+  body > .resultHTML {
+    font-family: 'Courier New', Courier, monospace;
+    padding: 0.5rem;
+    background: #2b2b2b;
+    color: #eee;
+    border-radius: 0.5rem;
+    width: 30rem;
+    white-space: pre-wrap; }
+
+.filter {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+  background: rgba(57, 57, 57, 0.9);
+  border: 3px solid #393939;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  min-width: 12rem;
+  position: absolute;
+  min-height: 5rem;
+  user-select: none; }
+  .filter.source .preview {
+    position: relative;
+    margin-top: 3rem; }
+    .filter.source .preview input[type="file"] {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      opacity: 0;
+      cursor: pointer; }
+  .filter.result {
+    right: 0; }
+  .filter.selected {
+    outline: 3px solid #4c4c4c; }
+  .filter .name {
+    font-weight: bold; }
+  .filter .inputs, .filter .outputs {
+    position: absolute;
+    left: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column; }
+    .filter .inputs .input, .filter .inputs .output, .filter .outputs .input, .filter .outputs .output {
+      width: 0.6rem;
+      height: 0.6rem;
+      border-radius: 50%;
+      outline: 2px solid #2eb2ff;
+      border: 2px solid #2b2b2b; }
+      .filter .inputs .input.linked, .filter .inputs .output.linked, .filter .outputs .input.linked, .filter .outputs .output.linked {
+        background: #2eb2ff; }
+      .filter .inputs .input:hover, .filter .inputs .output:hover, .filter .outputs .input:hover, .filter .outputs .output:hover {
+        cursor: pointer; }
+    .filter .inputs .input, .filter .outputs .input {
+      margin-bottom: 0.5rem; }
+  .filter .column select[name="type"] {
+    display: none; }
+  .filter .column .input-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem; }
+    .filter .column .input-group strong {
+      width: 5rem; }
+    .filter .column .input-group[data-key="in"], .filter .column .input-group[data-key="in2"] {
+      display: none; }
+    .filter .column .input-group > select,
+    .filter .column .input-group > input {
+      width: 5rem; }
+    .filter .column .input-group > table {
+      border-collapse: collapse; }
+      .filter .column .input-group > table td {
+        border: 1px solid #4c4c4c; }
+      .filter .column .input-group > table input {
+        width: 2.5rem;
+        border: none;
+        text-align: right; }
+  .filter .outputs {
+    left: unset;
+    right: 0; }
+    .filter .outputs .output-holder {
+      display: flex;
+      align-items: center; }
+      .filter .outputs .output-holder strong {
+        margin-right: 1rem; }
+      .filter .outputs .output-holder .output {
+        margin-left: auto; }
+  .filter .preview {
+    display: inline-flex;
+    justify-content: center;
+    width: 10rem;
+    height: 10rem;
+    overflow: hidden;
+    background-image: url(dd0efd02c72c989879be.png);
+    background-size: 20%;
+    image-rendering: pixelated;
+    margin-top: 0.5rem; }
+    .filter .preview > * {
+      height: 100%;
+      width: 100%; }
+
+.filter-select {
+  position: fixed;
+  z-index: 10;
+  background: #393939;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  width: 20rem;
+  transform: translate(-50%, 0);
+  display: flex;
+  flex-direction: column; }
+  .filter-select input {
+    margin-bottom: 0.5rem; }
+  .filter-select li {
+    cursor: pointer;
+    list-style: none; }
+    .filter-select li:hover {
+      font-weight: bold; }
+    .filter-select li.hidden {
+      display: none; }
+    .filter-select li.selected {
+      font-weight: bold; }
+

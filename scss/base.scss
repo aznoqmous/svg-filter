@@ -1,0 +1,54 @@
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    font-family: "DM Sans";
+    padding: 2rem;
+    background: $color_black;
+    color: $color_white;
+    display: flex;
+    font-size: 0.8rem;
+    
+    > svg:not(.leader-line) {
+        display: none;
+    }
+}
+
+img {
+    width: 256px;
+    height: 256px;
+    object-fit: cover;
+}
+
+figure {
+    width: 256px;
+    height: 256px;
+}
+
+canvas {
+    width: 100%;
+    height: 100%;
+}
+
+.leader-line {
+    z-index: -1;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+}
+
+input, select {
+    border: 1px solid $color_grey_2;
+    background: $color_grey;
+    color: $color_white;
+    padding: 0.1rem 0.2rem;
+    border-radius: 0.2rem;
+    &:focus {
+        outline: 2px solid $color_grey_2;
+    }
+}

@@ -1,3 +1,5 @@
+import { SvgFilterTypes, SvgFilterTypesManager } from "./svg-filter-types"
+
 export default class SvgFilter {
     constructor(name="customSvgFilter"){
         this.build()
@@ -38,5 +40,17 @@ export default class SvgFilter {
     }
     addFilterClones(filters){
         filters.map(filter => this.addFilterClone(filter))
+    }
+
+    addFilterFromHTML(html){
+        let filter = SvgFilterTypesManager.getFilterFromTagName(html.tagName)
+        let attributes = html.getAttributeNames()
+        attributes.map(attr => {
+            let value = html.getAttribute(attr)
+            if(attr == "result") filter.name = value
+            filter.element.setAttribute(attr, value)
+        })
+        this.addFilter(filter)
+        return filter
     }
 }

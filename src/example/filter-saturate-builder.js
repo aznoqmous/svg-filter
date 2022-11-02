@@ -9,7 +9,7 @@ export default class FilterSaturateBuilder extends FilterBuilder {
                 type: "filter"
             },
             value: {
-                step: 10
+                step: .1
             }
         })
     }

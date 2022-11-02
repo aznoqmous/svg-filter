@@ -1,11 +1,10 @@
 import Builder from "./example/builder"
 import Mouse from "./example/Mouse"
-
+import "../scss/style.scss"
 document.addEventListener('DOMContentLoaded', ()=>{
 
-    new Builder(document.querySelectorAll('.examples > img')[1])
+    let b = new Builder(document.querySelectorAll('.examples > img')[0])
     Mouse.bind()
-
 })
 
 export default class Blob {

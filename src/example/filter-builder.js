@@ -21,7 +21,7 @@ export default class FilterBuilder {
         this.previewContainer = this.element.querySelector('.preview')
         
         this.name = this.element.querySelector('.name')
-        this.name.innerHTML = this.filter.name
+        this.name.innerHTML = this.label
         
         Builder.Instance.filterBuilderLabels.map((label,i) => {
             this.element.typeSelect.add(new Option(label, i, this.label == label, this.label == label))
@@ -56,7 +56,6 @@ export default class FilterBuilder {
             if(ri.Link) ri.Link.remove()
         })
 
-
         newFields.map(f => {
             let input = Builder.Instance.createElement('i', {class: "input"}, this.inputsContainer)
             this.GraphBox.addInput(input)
@@ -90,8 +89,21 @@ export default class FilterBuilder {
     }
     
     buildOutput(){
-        this.output = Builder.Instance.createElement('i', { class: "output"}, this.outputsContainer)
+        this.output = Builder.Instance.createElement('i', { class: "output" }, this.outputsContainer)
+        this.bindOutput(this.output)
         this.GraphBox.addOutput(this.output)
+    }
+    bindOutput(output){
+        let startLinks = 0
+        output.addEventListener('dragstart', ()=>{
+            startLinks = output.Links?.length || 0
+        })
+        output.addEventListener('dragend', ()=>{
+            let endLinks = output.Links?.length || 0
+            if(startLinks == endLinks) {
+                setTimeout(()=> Builder.Instance.showFilterSelect(this))
+            }
+        })
     }
 
     setFilter(filterClass){
@@ -161,7 +173,7 @@ export default class FilterBuilder {
     }
 
     createField(key, config){
-        let container = Builder.Instance.createElement('div', {class: "input-group"}, this.settings)
+        let container = Builder.Instance.createElement('div', {class: `input-group`, "data-key":key}, this.settings)
         let label = Builder.Instance.createElement('strong', {}, container)
         label.innerHTML = key
         let attributes = Object.assign({
@@ -171,6 +183,7 @@ export default class FilterBuilder {
         }, config)
         let tagName = attributes.element
         delete attributes.tagName
+        delete attributes.element
 
         let element = Builder.Instance.createElement(tagName, attributes, container)
         element.addEventListener('input', ()=> Builder.Instance.update())
@@ -180,6 +193,28 @@ export default class FilterBuilder {
         switch(tagName){
             case "select":
                 this.setFilterSelectorOptions(element)
+                break;
+            case "table": 
+                let cols = attributes.columns.length
+                let rows = attributes.columns.length
+                let colTexts = ["", ...attributes.columns]
+                let rowTexts = ["", ...attributes.rows]
+                let currentIndex = 0
+                for(let y = 0; y < rows; y++){
+                    let row = Builder.Instance.createElement("tr", {}, element)
+                    row.innerHTML = `<th>${rowTexts[y]}</th>`
+                    if(!y) {
+                        row.innerHTML += "<th>" + attributes.columns.join('</th><th>') + "</th>"
+                        continue
+                    }
+                    for(let x = 0; x < cols; x++){
+                        let cell = Builder.Instance.createElement('td', {}, row)
+                        let input = Builder.Instance.createElement('input', attributes, cell)
+                        input.value = attributes.value[currentIndex]
+                        currentIndex++
+                    }
+                }
+                break;
             default:
                 break;
         }
@@ -235,7 +270,6 @@ export default class FilterBuilder {
     }
 
     updatePreview(){
-        console.log(this.label, this.isAllInputConnected)
         this.previewContainer.innerHTML = ""
         if(!this.isAllInputConnected) return;
         this.previewElement = Builder.Instance.testElement.cloneNode(true)
@@ -261,14 +295,10 @@ export default class FilterBuilder {
     }
 
     getPreviousFilters(){
-        /*let filters = Builder.Instance.treeWalk(this)
+        let filters = Builder.Instance.treeWalk(this)
         filters.push(this)
         filters.reverse()
-        console.log(filters)*/
-
-        let index = Builder.Instance.filters.map(f => f.name).indexOf(this.filter.name)
-        if(index == -1) return Builder.Instance.filters
-        return Builder.Instance.filters.slice(0, index)
+        return filters.map(fb => fb.filter)
     }
 
     get isAllInputConnected(){
@@ -284,5 +314,13 @@ export default class FilterBuilder {
     getInputBuilders(){
         let inputs = this.GraphBox?.inputs
         return inputs.map(i => i.Link?.output?.GraphBox?.element?.filterBuilder).filter(i => i)
+    }
+
+    connectTo(filterBuilder){
+        this.GraphBox.link(this.output, [...filterBuilder.inputsContainer.children][0])
+    }
+
+    connectToInput(input){
+        this.GraphBox.link(this.output, input)
     }
 }

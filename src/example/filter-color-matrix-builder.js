@@ -9,27 +9,23 @@ export default class FilterColorMatrixBuilder extends FilterBuilder
             in: {
                 element: "select",
                 type: "filter"
+            },
+            values: {
+                element: "table",
+                type: "number",
+                columns: ["R", "G", "B", "A", "1"],
+                rows: ["R", "G", "B", "A"],
+                value: [
+                    1,0,0,0,0,
+                    0,1,0,0,0,
+                    0,0,1,0,0,
+                    0,0,0,19,-10
+                ]
             }
         })
     }
-
-    render(){
-        super.render()
-        this.settings.inputValue = Builder.Instance.createElement('textarea', {
-            type: "number"
-        }, this.settings)
-        this.settings.inputValue.value = [
-            1,0,0,0,0,
-            0,1,0,0,0,
-            0,0,1,0,0,
-            0,0,0,19,-10
-        ].join(' ')
-        this.settings.inputValue.addEventListener('input', ()=>{
-            Builder.Instance.update()
-        })
-    }
-
     onUpdate(){
-        this.filter.values = this.settings.inputValue.value.split(' ')
+        let values = [...this.fields.values.querySelectorAll('input')].map(input => input.value)
+        this.filter.values = values
     }
 }

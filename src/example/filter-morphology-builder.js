@@ -3,7 +3,7 @@ import FilterBuilder from "./filter-builder";
 
 export default class FilterMorphologyBuilder extends FilterBuilder {
     constructor(){
-        super("Morphology", FilterMorphology, {
+        super("Erode/Dilate", FilterMorphology, {
             in: {
                 element: "select",
                 type: "filter"

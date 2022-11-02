@@ -28,10 +28,18 @@ export default class Builder {
             FilterGaussianBlurBuilder,
             FilterOffsetBuilder,
             
+            FilterColorMatrixBuilder,
+            FilterSaturateBuilder,
+            FilterHueRotateBuilder,
+            FilterLuminanceToAlphaBuilder,
+            
+            /* Dilate / Erode */
+            FilterMorphologyBuilder,
+
             /* Blend */
             FilterCompositeBuilder,
             FilterBlendBuilder,
-
+            
             /* Lighting */
             //FilterSpecularLightingBuilder,
             //FilterDiffuseLightingBuilder,
@@ -39,20 +47,23 @@ export default class Builder {
             FilterTurbulenceBuilder,
             FilterDisplacementMapBuilder,
 
-            FilterColorMatrixBuilder,
-            FilterSaturateBuilder,
-            FilterHueRotateBuilder,
-            FilterLuminanceToAlphaBuilder,
-            
-            /* Dilate / Erode */
-            FilterMorphologyBuilder
         ]
-        this.filterBuilderLabels = this.filterBuilderTypes.map(c => (new c()).label)
+        this.filterBuilderLabels = []
+        this.filterBuilderFilterClasses = []
+        this.filterBuilderTypes.map(c => {
+            c = new c()
+            this.filterBuilderLabels.push(c.label)
+            this.filterBuilderFilterClasses.push(c.class)
+        })
         this.filterBuilders = []
+        this.activeFilterBuilders = []
         this.build()
         this.bind()
     }
 
+    get activeFilters(){
+        return this.activeFilterBuilders.map(fb => fb.filter)
+    }
     get filters(){
         return this.filterBuilders.map(fb => fb.filter)
     }
@@ -72,7 +83,6 @@ export default class Builder {
                 radius: "3px"
             }
         })
-        this.addButton = this.container.querySelector('.add')
         this.resultContainer = document.querySelector('.resultHTML')
 
         this.sourceGraphicBuilder = new SourceGraphicBuilder()
@@ -105,28 +115,69 @@ export default class Builder {
         this.svgNameInput.addEventListener('input', ()=>{
             this.updateResult()
         })
-        this.addButton.addEventListener('click', (e)=> {
-            e.preventDefault()
-            this.addFilterBuilder()
-        })
     }
 
     buildFilterSelect(){
         this.filterSelect = this.createElement('ul', {class:"filter-select"}, this.container)
+        this.filterSelect.search = this.createElement('input', {
+            type:"text",
+            placeholder: "Search..."
+        }, this.filterSelect)
+        let filters = []
         this.filterBuilderLabels.map((label, i)=> {
             let filter = this.createElement("li", {"data-key": i}, this.filterSelect)
             filter.innerHTML = label
             filter.addEventListener('click', ()=>{
-                console.log(label)
                 this.addFilterBuilder(Mouse.position, this.filterBuilderTypes[i])
             })
+            filters.push(filter)
         })
+        this.filterSelect.search.addEventListener('keyup', (e)=>{
+            if(e.key == "Enter"){
+                this.filterSelect.search.value = ""
+                this.addFilterBuilder(this.nextPosition, this.filterBuilderTypes[filters.indexOf(selectedFilter)])
+                this.hideFilterSelect()
+                return
+            }
+            if(e.key == "Escape"){
+                this.filterSelect.search.value = ""
+                this.hideFilterSelect()
+                return
+            }
+            if(e.key == "ArrowDown"){
+                selectedFilter = filters[filters.indexOf(selectedFilter) + 1]
+                updateFilterSelect()
+                return;
+            }
+            if(e.key == "ArrowUp"){
+                selectedFilter = filters[filters.indexOf(selectedFilter) - 1]
+                updateFilterSelect()
+                return;
+            }
+            let matchingFilters = filters.filter(f => f.innerHTML.toLowerCase().match(this.filterSelect.search.value.toLowerCase()))
+            selectedFilter = matchingFilters[0]
+            filters.map(f => f.classList.add('hidden'))
+            matchingFilters.map(f => f.classList.remove('hidden'))
+            updateFilterSelect()
+        })
+
+        let selectedFilter = filters[0]
+        const updateFilterSelect = ()=>{
+            filters.map(f => {
+                f.classList.toggle('selected', selectedFilter == f)
+            })
+        }
+        updateFilterSelect()
+
     }
-    showFilterSelect(){
+    showFilterSelect(futureConnection=null){
         let mousePosition = Mouse.position;
         this.filterSelect.style.left = mousePosition.x+"px"
         this.filterSelect.style.top = mousePosition.y+"px"
         this.filterSelect.style.display = null
+        this.connectNextFilterBuilderTo = futureConnection
+        this.nextPosition = mousePosition
+        this.filterSelect.search.focus()
     }
     hideFilterSelect(){
         this.filterSelect.style.display = "none"
@@ -149,14 +200,26 @@ export default class Builder {
         this.filterBuilders.map(fb => fb.updateFilterSelectors())
         this.update()
         this.reorderBuilders()
-        
         filterBuilder.GraphBox.Draggable.setPosition(position)
+
+        if(this.connectNextFilterBuilderTo) {
+            this.connectNextFilterBuilderTo.connectTo(filterBuilder)
+        }
+        return filterBuilder
+    }
+
+    getFilterBuilderByClass(constructor){
+        return this.filterBuilderTypes[this.filterBuilderFilterClasses.indexOf(constructor)]
     }
 
     getFilterBuilderByLabel(label){
         return this.filterBuilderTypes[this.filterBuilderLabels.indexOf(label)]
     }
 
+    getFilterBuilderByName(filterName){
+        let match = this.filterBuilders.filter(f => f.filter.name == filterName)
+        return match.length ? match[0] : null
+    }
     getFilterByName(filterName){
         let match = this.filters.filter(f => f.name == filterName)
         return match.length ? match[0] : null
@@ -165,7 +228,7 @@ export default class Builder {
     update(){
         this.filterBuilders.map(fb => fb.update())
 
-        this.svgFilter.setFilters(this.filters)
+        this.svgFilter.setFilters(this.activeFilters)
 
         this.updateResult()
     }
@@ -196,7 +259,7 @@ export default class Builder {
 
     reorderBuilders(){
         let tree = this.treeWalk(this.resultBuilder)
-        this.filterBuilders = tree.reverse()
+        this.activeFilterBuilders = tree.reverse()
         this.update()
     }
 
@@ -228,6 +291,55 @@ export default class Builder {
         return select
     }
 
+    setTestElement(element){
+        this.testElement = element
+        let builders = [this.sourceGraphicBuilder, this.resultBuilder, ...this.filterBuilders]
+        builders.map(b => {
+            let container = b.previewElement.parentElement
+            let style = b.previewElement.getAttribute('style')
+            b.previewElement.remove()
+            b.previewElement = this.testElement.cloneNode(true)
+            b.previewElement.style = style
+            container.appendChild(b.previewElement)
+        })
+    }
+
+    importFromHTML(html){
+        let shadow = document.createElement('div')
+        shadow.innerHTML = html
+        let filtersHTML = [...shadow.querySelectorAll('filter > *')]
+        filtersHTML.map(html => {
+            let filter = this.svgFilter.addFilterFromHTML(html)
+            let filterBuilder = this.getFilterBuilderByClass(filter.constructor)
+            filterBuilder = this.addFilterBuilder(null, filterBuilder)
+            filterBuilder.filter = filter
+            filterBuilder.render()
+        })
+        filtersHTML.map((html, i)=>{
+            let fb = this.filterBuilders[i]
+            let inputs = Object.fromEntries(html.getAttributeNames().filter(a => a == "in" || a == "in2").map(k => [k, html.getAttribute(k)]))
+
+            Object.keys(inputs).map(k => {
+                let name = inputs[k]
+                let source =  this.getFilterBuilderByName(name)
+
+                if(name == "SourceGraphic"){
+                    this.sourceGraphicBuilder.selectedOutput = this.sourceGraphicBuilder.outputs[0]
+                    source = this.sourceGraphicBuilder
+                }
+                if(name == "SourceAlpha"){
+                    this.sourceGraphicBuilder.selectedOutput = this.sourceGraphicBuilder.outputs[1]
+                    source = this.sourceGraphicBuilder
+                }
+
+                if(source){
+                    source.connectTo(fb)
+                }
+            })
+        })
+        let lastFilter = this.filterBuilders[this.filterBuilders.length-1]
+        lastFilter.connectTo(this.resultBuilder)
+    }
 
     static get Instance(){
         if(!this._instance) this._instance = new this()

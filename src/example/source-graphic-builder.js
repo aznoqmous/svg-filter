@@ -17,14 +17,52 @@ export default class SourceGraphicBuilder {
         
         let outputValues = ["SourceGraphic", "SourceAlpha"] 
         
+        this.outputs = []
         outputValues.map(value => {
             let outputHolder = Builder.Instance.createElement("div", {class: "output-holder"}, this.outputsContainer)
             let outputLabel = Builder.Instance.createElement("strong", {}, outputHolder)
             outputLabel.innerHTML = value
             let output = Builder.Instance.createElement('i', { class: "output"}, outputHolder)
             output.key = value
+            this.outputs.push(output)
+            this.bindOutput(output)
             this.GraphBox.addOutput(output)
         })
-        
+
+        this.fileInput = Builder.Instance.createElement('input', {type: "file"}, this.previewContainer)
+        this.fileInput.addEventListener('change', (e)=>{
+            this.handleFileSelect(this.fileInput.files[this.fileInput.files.length-1])
+        })
+    }
+    handleFileSelect(file){
+        let reader = new FileReader()
+        reader.onprogress = (e)=>{
+            console.log((Math.floor(e.loaded / e.total ) * 100).toFixed(2) + '%')
+        }
+        reader.onloadend = (e)=>{
+            if (e.target.readyState == FileReader.DONE) {
+                let image = document.createElement('img')
+                image.src = e.srcElement.result
+                Builder.Instance.setTestElement(image)
+            }
+        }
+        reader.readAsDataURL(file)
+    }
+
+    bindOutput(output){
+        let startLinks = 0
+        output.addEventListener('dragstart', ()=>{
+            startLinks = output.Links?.length || 0
+        })
+        output.addEventListener('dragend', ()=>{
+            let endLinks = output.Links?.length || 0
+            if(startLinks == endLinks) {
+                this.selectedOutput = output
+                setTimeout(()=> Builder.Instance.showFilterSelect(this))
+            }
+        })
+    }
+    connectTo(filterBuilder){
+        this.GraphBox.link(this.selectedOutput, [...filterBuilder.inputsContainer.children][0])
     }
 }

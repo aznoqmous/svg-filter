@@ -13,7 +13,9 @@ export default class GraphBox extends EventTarget{
                 dy: 1,
                 blur: 1
             },
-            dash: true
+            dash: true,
+            startSocket: 'right',
+            endSocket: 'left'
         }
 
         this.selectable = selectable
@@ -118,7 +120,9 @@ export class Link {
                 dx: 0,
                 dy: 1,
                 blur: 1
-              }
+              },
+            startSocket: 'right',
+            endSocket: 'left'
         }
 
         this.input = input
@@ -142,6 +146,11 @@ export class Link {
         this.input.dispatchEvent(new CustomEvent("link", {detail: {
             source: this.output
         }}))
+        this.output.dispatchEvent(new CustomEvent("link", {detail: {
+            source: this.input
+        }}))
+        this.input.classList.add('linked')
+        this.output.classList.add('linked')
         this.output.Draggable.endDrag()
         this.output.GraphBox.element.addEventListener('drag', this.callback)
         this.input.GraphBox.element.addEventListener('drag', this.callback)
@@ -155,8 +164,16 @@ export class Link {
         this.Line.remove()
         this.output.GraphBox.element.removeEventListener('drag', this.callback)
         this.input.GraphBox.element.removeEventListener('drag', this.callback)
+        this.input.dispatchEvent(new CustomEvent("unlink", {detail: {
+            source: this.output
+        }}))
+        this.output.dispatchEvent(new CustomEvent("unlink", {detail: {
+            source: this.input
+        }}))
+        this.input.classList.remove('linked')
         delete this.input.Link
         this.removeOutputLink()
+        if(!this.output.Links?.length) this.output.classList.remove('linked')
     }
 
     addOutputLink(){

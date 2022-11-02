@@ -1,0 +1,122 @@
+.filter {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+    background: rgba($filter_background, 0.9);
+    border: 3px solid $filter_background;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    min-width: 12rem;
+    position: absolute;
+    min-height: 5rem;
+    user-select: none;
+    &.source {
+        .preview {
+            position: relative;
+            margin-top: 3rem;
+            input[type="file"] {
+                position: absolute;
+                inset: 0;
+                z-index: 10;
+                opacity: 0;
+                cursor: pointer;
+            }
+        }
+
+    }
+    &.result {
+        right: 0;
+    }
+    &.selected {
+        outline: 3px solid $color_grey;
+    }
+    .name {
+        font-weight: bold;
+    }
+    .inputs, .outputs {
+        position: absolute;
+        left: 0;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        .input, .output {
+            width: 0.6rem;
+            height: 0.6rem;
+            border-radius: 50%;
+            outline: 2px solid $color_blue;
+            border: 2px solid $color_dark;
+            &.linked {
+                background: $color_blue;
+            }
+            &:hover {
+                cursor: pointer;
+            }
+        }
+        .input {
+            margin-bottom: 0.5rem;
+        }
+    }
+    .column {
+        select[name="type"]{
+            display: none;
+        }
+        .input-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            strong {
+                width: 5rem;
+            }
+            &[data-key="in"],
+            &[data-key="in2"]
+            {
+                display: none;
+            }
+            > select,
+            > input {
+                width: 5rem;
+        
+            }
+            > table {
+                border-collapse: collapse;
+                td {
+                    border: 1px solid $color_grey;
+                }
+                input {
+                    width: 2.5rem;
+                    border: none;
+                    text-align: right;
+                }
+            }
+        }
+    }
+    .outputs {
+        left: unset;
+        right: 0;
+        .output-holder{
+            display: flex;
+            align-items: center;
+            strong {
+                margin-right: 1rem;
+            }
+            .output {
+                margin-left: auto;
+            }
+        } 
+    }
+    .preview {
+        display: inline-flex;
+        justify-content: center;
+        width: 10rem;
+        height: 10rem;
+        overflow: hidden;
+        background-image: url("../transparent.png");
+        background-size: 20%;
+        image-rendering: pixelated;
+        margin-top: 0.5rem;
+        > * {
+            height: 100%;
+            width: 100%;
+        }
+    }
+}

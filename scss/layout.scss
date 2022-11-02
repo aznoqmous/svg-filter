@@ -1,0 +1,27 @@
+body {
+    overflow: hidden;
+    > .examples {
+        display: none;
+    }
+    > .container {
+        width: calc(100% - 32rem);
+        margin-right: 2rem;
+        .filters {
+            margin-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 7rem);
+            width: 100%;
+            position: relative;
+        }
+    }
+    > .resultHTML {
+        font-family: 'Courier New', Courier, monospace;
+        padding: 0.5rem;
+        background: $color_dark;
+        color: $color_white;
+        border-radius: 0.5rem;
+        width: 30rem;
+        white-space: pre-wrap;
+    }
+}
