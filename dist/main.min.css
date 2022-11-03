@@ -77,8 +77,8 @@ body {
   border-radius: 0.5rem;
   padding: 1rem;
   min-width: 12rem;
-  position: absolute;
   min-height: 5rem;
+  position: absolute;
   user-select: none; }
   .filter.source .preview {
     position: relative;
@@ -93,8 +93,29 @@ body {
     right: 0; }
   .filter.selected {
     outline: 3px solid #4c4c4c; }
-  .filter .name {
-    font-weight: bold; }
+  .filter.closed {
+    min-width: 8rem; }
+    .filter.closed .label i::before {
+      content: "+"; }
+    .filter.closed .settings {
+      display: none; }
+    .filter.closed .preview {
+      width: 6rem;
+      height: 6rem; }
+  .filter .label {
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer; }
+    .filter .label .name {
+      font-weight: bold; }
+    .filter .label i {
+      font-weight: bold;
+      font-style: normal;
+      margin-left: 0.3em;
+      font-size: 1.3em;
+      margin-top: -0.3em; }
+      .filter .label i::before {
+        content: "-"; }
   .filter .inputs, .filter .outputs {
     position: absolute;
     left: 0;

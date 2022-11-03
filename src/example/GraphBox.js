@@ -108,6 +108,11 @@ export default class GraphBox extends EventTarget{
         if(!GraphBox.instances) GraphBox.instances = []
         if(!GraphBox.instances.includes(this)) GraphBox.instances.push(this)
     }
+
+    update(){
+        this.inputs.map(input => input.Link?.updateLine())
+        this.outputs.map(output => output.Links?.map(l => l.updateLine()))
+    }
 }
 
 export class Link {

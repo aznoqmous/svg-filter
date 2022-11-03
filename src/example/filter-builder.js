@@ -23,6 +23,7 @@ export default class FilterBuilder {
         this.name = this.element.querySelector('.name')
         this.name.innerHTML = this.label
         
+        
         Builder.Instance.filterBuilderLabels.map((label,i) => {
             this.element.typeSelect.add(new Option(label, i, this.label == label, this.label == label))
         })
@@ -32,11 +33,18 @@ export default class FilterBuilder {
             this.render()
             Builder.Instance.update()
         })
-
+        
         this.GraphBox = new GraphBox(Builder.Instance.selectable, this.element, [], [])
         this.inputsContainer = Builder.Instance.createElement("div", { class: "inputs"}, this.element)
         this.outputsContainer = Builder.Instance.createElement("div", { class: "outputs"}, this.element)
         
+        
+        this.toggle = this.element.querySelector('.label')
+        this.toggle.addEventListener('click', ()=>{
+            this.element.classList.toggle('closed')
+            this.GraphBox.update()
+        })
+
         this.render()
 
         this.buildInputs()
@@ -71,8 +79,8 @@ export default class FilterBuilder {
     updateInput(input){
         if(!input || !this.fields[input.key]) return;
         this.fields[input.key].value = this.getLinkedFilterName(input)
-        Builder.Instance.update()
         Builder.Instance.reorderBuilders()
+        Builder.Instance.update()
         this.updatePreview()
     }
 
@@ -184,7 +192,6 @@ export default class FilterBuilder {
         let tagName = attributes.element
         delete attributes.tagName
         delete attributes.element
-
         let element = Builder.Instance.createElement(tagName, attributes, container)
         element.addEventListener('input', ()=> Builder.Instance.update())
         element.value = this.filter[key]
@@ -196,7 +203,7 @@ export default class FilterBuilder {
                 break;
             case "table": 
                 let cols = attributes.columns.length
-                let rows = attributes.columns.length
+                let rows = attributes.rows.length + 1
                 let colTexts = ["", ...attributes.columns]
                 let rowTexts = ["", ...attributes.rows]
                 let currentIndex = 0
@@ -295,10 +302,7 @@ export default class FilterBuilder {
     }
 
     getPreviousFilters(){
-        let filters = Builder.Instance.treeWalk(this)
-        filters.push(this)
-        filters.reverse()
-        return filters.map(fb => fb.filter)
+        return Builder.Instance.treeWalk(this).map(fb => fb.filter)
     }
 
     get isAllInputConnected(){

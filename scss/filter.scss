@@ -7,8 +7,8 @@
     border-radius: 0.5rem;
     padding: 1rem;
     min-width: 12rem;
-    position: absolute;
     min-height: 5rem;
+    position: absolute;
     user-select: none;
     &.source {
         .preview {
@@ -30,8 +30,40 @@
     &.selected {
         outline: 3px solid $color_grey;
     }
-    .name {
-        font-weight: bold;
+    &.closed {
+        min-width: 8rem;
+        .label {
+            i {
+                &::before {
+                    content: "+"
+                }
+            }
+        }
+        .settings {
+            display: none;
+        }
+        .preview {
+            width: 6rem;
+            height: 6rem;
+        }
+    }
+    .label {
+        display: flex;
+        justify-content: space-between;
+        cursor: pointer;
+        .name {
+            font-weight: bold;
+        }
+        i {
+            font-weight: bold;
+            font-style: normal;
+            margin-left: 0.3em;
+            font-size: 1.3em;
+            margin-top: -0.3em;
+            &::before {
+                content: "-"
+            }
+        }
     }
     .inputs, .outputs {
         position: absolute;

@@ -3,8 +3,8 @@ import Filter from "./filter";
 export default class FilterFlood extends Filter {
     constructor(name, floodColor="red", floodOpacity=1){
         super("feFlood", {
-            floodColor,
-            floodOpacity
+            "flood-color": floodColor,
+            "flood-opacity": floodOpacity
         }, name)
     }
 

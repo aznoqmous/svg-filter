@@ -19,12 +19,14 @@ export default class ResultBuilder {
 
         this.input.addEventListener('link', ()=> {
             Builder.Instance.reorderBuilders()
+            Builder.Instance.update()
         })
     }
 
     updatePreview(){
         this.previewElement = Builder.Instance.testElement.cloneNode(true)
         this.previewElement.style.filter = `url(#${Builder.Instance.testName})`
+        this.previewContainer.innerHTML = ""
         this.previewContainer.appendChild(this.previewElement)
     }
 

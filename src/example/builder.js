@@ -203,8 +203,8 @@ export default class Builder {
         this.filtersContainer.appendChild(filterBuilder.element)
         
         this.filterBuilders.map(fb => fb.updateFilterSelectors())
-        this.update()
         this.reorderBuilders()
+        this.update()
         filterBuilder.GraphBox.Draggable.setPosition(position)
 
         if(this.connectNextFilterBuilderTo) {
@@ -232,9 +232,9 @@ export default class Builder {
 
     update(){
         this.filterBuilders.map(fb => fb.update())
-
+        this.resultBuilder.updatePreview()
         this.svgFilter.setFilters(this.activeFilters)
-
+        
         this.updateResult()
     }
 
@@ -263,12 +263,12 @@ export default class Builder {
     }
 
     reorderBuilders(){
-        let tree = this.treeWalk(this.resultBuilder)
-        this.activeFilterBuilders = tree.reverse()
-        this.update()
+        this.activeFilterBuilders = this.treeWalk(this.resultBuilder)
     }
-
-    treeWalk(current, currentTree=[], level=0){
+    treeWalk(builder){
+        return this.treeWalkStep(builder).sort((a,b)=> a.level < b.level ? 1 : -1)
+    }
+    treeWalkStep(current, currentTree=[], level=0){
         let inputs = current.GraphBox?.inputs
         if(!inputs && !inputs.length) return currentTree
         let fbs = inputs.map(i => i.Link?.output?.GraphBox?.element?.filterBuilder).filter(i => i)
@@ -276,7 +276,7 @@ export default class Builder {
             if(fb.constructor == SourceGraphicBuilder) return;
             fb.level = level
             currentTree.push(fb)
-            return this.treeWalk(fb, currentTree, level+1)
+            return this.treeWalkStep(fb, currentTree, level+1)
         })
         return currentTree
     }
