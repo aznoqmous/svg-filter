@@ -79,7 +79,9 @@ body {
   min-width: 12rem;
   min-height: 5rem;
   position: absolute;
-  user-select: none; }
+  user-select: none;
+  box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.2);
+  transition: outline 0.1s ease; }
   .filter.source .preview {
     position: relative;
     margin-top: 3rem; }
@@ -92,7 +94,8 @@ body {
   .filter.result {
     right: 0; }
   .filter.selected {
-    outline: 3px solid #4c4c4c; }
+    outline: 3px solid #4c4c4c;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2); }
   .filter.closed {
     min-width: 8rem; }
     .filter.closed .label i::before {

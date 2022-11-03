@@ -10,6 +10,8 @@
     min-height: 5rem;
     position: absolute;
     user-select: none;
+    box-shadow: 0 0.2rem 0.5rem rgba(black, 0.2);
+    transition: outline 0.1s ease;
     &.source {
         .preview {
             position: relative;
@@ -29,6 +31,7 @@
     }
     &.selected {
         outline: 3px solid $color_grey;
+        box-shadow: 0 0.5rem 1rem rgba(black, 0.2);
     }
     &.closed {
         min-width: 8rem;

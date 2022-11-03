@@ -37,6 +37,12 @@ export default class Selectable {
     }
 
     handleMouseDown(e){
+        let overlappingElements = this.selectableElements.filter(se => se.contains(e.target) || se == e.target)
+        let targetElement =  overlappingElements.length ? overlappingElements[0] : null
+        if(this.selectedElements.length && !targetElement) this.unselectAll()
+        if(this.selectedElements.length && !this.selectedElements.includes(targetElement)) this.unselectAll()
+        if(targetElement) this.select(targetElement)
+        
         if(e.target != this.element) return;
         e.preventDefault()
         if(this.isDragging) return;
@@ -99,12 +105,24 @@ export default class Selectable {
             && e.clientRect.y + e.clientRect.height > y
             && e.clientRect.y < y + size.y
         ))
-        newSelectedElements.map(e => e.dispatchEvent(new Event('selectstart')))
+        newSelectedElements.map(e => this.select(e))
 
         let unselectedElements = this.selectedElements.filter(e => !newSelectedElements.includes(e))
-        unselectedElements.map(e => e.dispatchEvent(new Event('selectend')))
+        unselectedElements.map(e => this.unselect(e))
+    }
 
-        this.selectedElements = newSelectedElements
+    select(element){
+        element.dispatchEvent(new Event('selectstart'))
+        if(!this.selectedElements.includes(element)) this.selectedElements.push(element)
+    }
+    unselect(element){
+        element.dispatchEvent(new Event('selectend'))
+        let index = this.selectedElements.indexOf(element)
+        if(index >= 0) this.selectedElements.splice(index, 1)
+    }
+    unselectAll(){
+        this.selectedElements.map(e => e.dispatchEvent(new Event('selectend')))
+        this.selectedElements = []
     }
 
     addSelectable(element){

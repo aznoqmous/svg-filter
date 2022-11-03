@@ -1,4 +1,5 @@
 import SvgFilter from "../svg-filter"
+import Draggable from "./Draggable"
 import FilterBlendBuilder from "./filter-blend-builder"
 import FilterBuilder from "./filter-builder"
 import FilterColorMatrixBuilder from "./filter-color-matrix-builder"
@@ -124,6 +125,7 @@ export default class Builder {
 
     buildFilterSelect(){
         this.filterSelect = this.createElement('ul', {class:"filter-select"}, this.container)
+        new Draggable(this.filterSelect)
         this.filterSelect.search = this.createElement('input', {
             type:"text",
             placeholder: "Search..."
@@ -179,6 +181,7 @@ export default class Builder {
         let mousePosition = Mouse.position;
         this.filterSelect.style.left = mousePosition.x+"px"
         this.filterSelect.style.top = mousePosition.y+"px"
+
         this.filterSelect.style.display = null
         this.connectNextFilterBuilderTo = futureConnection
         this.nextPosition = mousePosition
@@ -201,6 +204,7 @@ export default class Builder {
         filterBuilder.build()
         this.filterBuilders.push(filterBuilder)
         this.filtersContainer.appendChild(filterBuilder.element)
+        filterBuilder.GraphBox.update()
         
         this.filterBuilders.map(fb => fb.updateFilterSelectors())
         this.reorderBuilders()

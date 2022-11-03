@@ -45,6 +45,11 @@ export default class Draggable {
         this.element.dispatchEvent(new Event('drag'))
     }
 
+    update(){
+        this.updateBounds()
+        this.setPosition(this.currentOffset)
+    }
+
     setPosition(position){
         this.currentOffset = position
         if(this.bounds) this.applyBounds(this.currentOffset)
@@ -71,6 +76,7 @@ export default class Draggable {
     }
 
     updateBounds(){
+        if(!this.element.parentElement) return;
         let offset = this.currentOffset
         
         this.resetPosition()

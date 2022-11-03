@@ -110,6 +110,7 @@ export default class GraphBox extends EventTarget{
     }
 
     update(){
+        this.Draggable.update()
         this.inputs.map(input => input.Link?.updateLine())
         this.outputs.map(output => output.Links?.map(l => l.updateLine()))
     }

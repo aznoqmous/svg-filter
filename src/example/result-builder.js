@@ -1,3 +1,4 @@
+import SvgFilter from "../svg-filter"
 import Builder from "./builder"
 import GraphBox from "./GraphBox"
 
@@ -15,7 +16,7 @@ export default class ResultBuilder {
         this.input = Builder.Instance.createElement('i', {class: "input"}, this.inputsContainer)
         this.GraphBox.addInput(this.input)
 
-        this.updatePreview()
+        this.buildPreview()
 
         this.input.addEventListener('link', ()=> {
             Builder.Instance.reorderBuilders()
@@ -23,16 +24,22 @@ export default class ResultBuilder {
         })
     }
 
+    buildPreview(){
+        this.svgFilter = new SvgFilter("result_preview")
+        this.updatePreview()
+    }
     updatePreview(){
         this.previewElement = Builder.Instance.testElement.cloneNode(true)
-        this.previewElement.style.filter = `url(#${Builder.Instance.testName})`
+        this.previewElement.style.filter = `url(#result_preview)`
         this.previewContainer.innerHTML = ""
         this.previewContainer.appendChild(this.previewElement)
-    }
 
+        let filters = this.getPreviousFilters()
+        this.svgFilter.filters.innerHTML = ""
+        this.svgFilter.addFilterClones(filters)
+        this.previewContainer.appendChild(this.svgFilter.svg)
+    }
     getPreviousFilters(){
-        let index = Builder.Instance.filters.map(f => f.name).indexOf(this.filter.name)
-        if(index == -1) return Builder.Instance.filters
-        return Builder.Instance.filters.slice(0, index)
+        return Builder.Instance.treeWalk(this).map(fb => fb.filter)
     }
 }

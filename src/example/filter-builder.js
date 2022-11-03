@@ -39,7 +39,7 @@ export default class FilterBuilder {
         this.outputsContainer = Builder.Instance.createElement("div", { class: "outputs"}, this.element)
         
         
-        this.toggle = this.element.querySelector('.label')
+        this.toggle = this.element.querySelector('.label i')
         this.toggle.addEventListener('click', ()=>{
             this.element.classList.toggle('closed')
             this.GraphBox.update()
