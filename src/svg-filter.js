@@ -1,3 +1,4 @@
+import FilterBlend from "./filter-blend"
 import { SvgFilterTypes, SvgFilterTypesManager } from "./svg-filter-types"
 
 export default class SvgFilter {
@@ -42,8 +43,20 @@ export default class SvgFilter {
         filters.map(filter => this.addFilterClone(filter))
     }
 
+    getFilterClassFromHTML(html){
+        let filters = SvgFilterTypesManager.getFiltersByTagName(html.tagName)
+        let filtersAttributes = filters.map(f => {
+            return {
+                f, 
+                count: Object.keys(f.attributes).filter(k => html.getAttribute(k) == f.attributes[k]).length
+            }
+        })
+        filtersAttributes = filtersAttributes.sort((a,b)=> a.count < b.count ? 1 : -1)
+        return filtersAttributes[0].f
+    }
+
     addFilterFromHTML(html){
-        let filter = SvgFilterTypesManager.getFilterFromTagName(html.tagName)
+        let filter = this.getFilterClassFromHTML(html)
         let attributes = html.getAttributeNames()
         attributes.map(attr => {
             let value = html.getAttribute(attr)

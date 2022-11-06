@@ -34,8 +34,7 @@ export const SvgFilterTypes = [
 ]
 
 export class SvgFilterTypesManager {
-    static getFilterFromTagName(tagName){
-        let matching = SvgFilterTypes.map(f => new f()).filter(f => f.element.tagName == tagName)
-        return matching.length ? matching[0] : null
+    static getFiltersByTagName(tagName){
+        return SvgFilterTypes.map(f => new f()).filter(f => f.element.tagName == tagName)
     }
 }

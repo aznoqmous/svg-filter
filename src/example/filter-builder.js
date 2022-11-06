@@ -320,8 +320,14 @@ export default class FilterBuilder {
         return inputs.map(i => i.Link?.output?.GraphBox?.element?.filterBuilder).filter(i => i)
     }
 
-    connectTo(filterBuilder){
-        this.GraphBox.link(this.output, [...filterBuilder.inputsContainer.children][0])
+    getInputByKey(key="in"){
+        let matching = [...this.inputsContainer.children].filter(i => i.key == key)
+        return matching.length ? matching[0] : null
+    }
+
+    connectTo(filterBuilder, key="in"){
+        let filterInput = filterBuilder.getInputByKey(key)
+        this.GraphBox.link(this.output, filterInput)
     }
 
     connectToInput(input){

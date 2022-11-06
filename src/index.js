@@ -5,6 +5,26 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
     let b = new Builder(document.querySelectorAll('.examples > img')[0])
     Mouse.bind()
+    /*b.importFromHTML(
+        `
+<svg>
+    <defs>
+        <filter id="newFilter">
+            <feGaussianBlur stdDeviation="10" result="filter1" in="SourceGraphic">
+            </feGaussianBlur>
+            <feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 19 -10" result="filter2" in="filter1">
+            </feColorMatrix>
+            <feColorMatrix type="hueRotate" values="90" result="filter4" in="filter2">
+            </feColorMatrix>
+            <feOffset dx="10" dy="10" result="filter5" in="filter4">
+            </feOffset>
+            <feBlend result="filter6" in="filter2" in2="filter5">
+            </feBlend>
+        </filter>
+    </defs>
+</svg>
+        `
+    )*/
 })
 
 export default class Blob {

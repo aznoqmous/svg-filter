@@ -17,7 +17,6 @@ export default class ResultBuilder {
         this.GraphBox.addInput(this.input)
 
         this.buildPreview()
-
         this.input.addEventListener('link', ()=> {
             Builder.Instance.reorderBuilders()
             Builder.Instance.update()
@@ -41,5 +40,8 @@ export default class ResultBuilder {
     }
     getPreviousFilters(){
         return Builder.Instance.treeWalk(this).map(fb => fb.filter)
+    }
+    getInputByKey(){
+        return this.input
     }
 }

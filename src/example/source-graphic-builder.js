@@ -62,7 +62,7 @@ export default class SourceGraphicBuilder {
             }
         })
     }
-    connectTo(filterBuilder){
-        this.GraphBox.link(this.selectedOutput, [...filterBuilder.inputsContainer.children][0])
+    connectTo(filterBuilder, key="in"){
+        this.GraphBox.link(this.selectedOutput, filterBuilder.getInputByKey(key))
     }
 }

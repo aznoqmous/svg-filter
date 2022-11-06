@@ -11,6 +11,7 @@ import FilterFloodBuilder from "./filter-flood-builder"
 import FilterGaussianBlurBuilder from "./filter-gaussian-blur-builder"
 import FilterHueRotateBuilder from "./filter-hue-rotate-builder"
 import FilterLuminanceToAlphaBuilder from "./filter-luminance-to-alpha-builder"
+import FilterMergeBuilder from "./filter-merge-builder"
 import FilterMorphologyBuilder from "./filter-morphology-builder"
 import FilterOffsetBuilder from "./filter-offset-builder"
 import FilterSaturateBuilder from "./filter-saturate-builder"
@@ -45,6 +46,7 @@ export default class Builder {
             /* Blend */
             FilterCompositeBuilder,
             FilterBlendBuilder,
+            FilterMergeBuilder,
             
             /* Lighting */
             //FilterSpecularLightingBuilder,
@@ -340,14 +342,27 @@ export default class Builder {
                     this.sourceGraphicBuilder.selectedOutput = this.sourceGraphicBuilder.outputs[1]
                     source = this.sourceGraphicBuilder
                 }
-
                 if(source){
-                    source.connectTo(fb)
+                    source.connectTo(fb, k)
                 }
             })
         })
         let lastFilter = this.filterBuilders[this.filterBuilders.length-1]
         lastFilter.connectTo(this.resultBuilder)
+        this.reArrangeBuilders()
+    }
+
+    reArrangeBuilders(){
+        this.reorderBuilders()
+        let parentRect = this.container.getBoundingClientRect()
+        let sourceWidth = this.sourceGraphicBuilder.GraphBox.element.getBoundingClientRect().width + 10
+        let resultWidth = this.resultBuilder.GraphBox.element.getBoundingClientRect().width + 10
+        let usableWidth = parentRect.width - sourceWidth - resultWidth
+        this.sourceGraphicBuilder.GraphBox.Draggable.setPosition(new Vector2(0,0))
+        this.filterBuilders.map((fb,i) => {
+            fb.GraphBox.Draggable.setPosition(new Vector2(sourceWidth + i*usableWidth/this.filterBuilders.length, 0))
+            fb.GraphBox.update()
+        })
     }
 
     static get Instance(){
