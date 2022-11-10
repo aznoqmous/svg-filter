@@ -3,12 +3,14 @@ import Builder from "./builder"
 import GraphBox from "./GraphBox"
 import SourceGraphicBuilder from "./source-graphic-builder"
 
-export default class FilterBuilder {
+export default class FilterBuilder extends EventTarget {
     constructor(label, filterClass=null, fieldsConfiguration={}){
+        super()
         this.label = label
         this.class = filterClass
         this.inputFilterName = null
         this.fieldsConfiguration = fieldsConfiguration
+        this.inputs = []
     }
 
     build(){
@@ -22,7 +24,6 @@ export default class FilterBuilder {
         
         this.name = this.element.querySelector('.name')
         this.name.innerHTML = this.label
-        
         
         Builder.Instance.filterBuilderLabels.map((label,i) => {
             this.element.typeSelect.add(new Option(label, i, this.label == label, this.label == label))
@@ -48,6 +49,7 @@ export default class FilterBuilder {
         this.render()
 
         this.buildInputs()
+        this.updateInputs()
         this.buildOutput()
     }
 
@@ -56,24 +58,34 @@ export default class FilterBuilder {
         let existingInputKeys = existingInputs.map(i => i.key)
         let fields = this.getFilterInputFields()
         let fieldKeys = fields.map(f => f.key)
-        let removedInputs = existingInputs.filter(i => !fieldKeys.includes(i.key))
+        let removedFields = fields.filter(f => !fieldKeys.includes(f.key))
         let newFields = fields.filter(f => !existingInputKeys.includes(f.key))
         
-        removedInputs.map(ri => {
-            ri.remove()
-            if(ri.Link) ri.Link.remove()
-        })
+        removedFields.map(f => this.removeFieldInput(f))
 
-        newFields.map(f => {
-            let input = Builder.Instance.createElement('i', {class: "input"}, this.inputsContainer)
-            this.GraphBox.addInput(input)
-            input.key = f.key
-            input.addEventListener('link', (data)=>{
-                this.updateInput(input)
-            })
-        })
+        newFields.map(f => this.addFieldInput(f))
+    }
 
+    updateInputs(){
         ;[...this.inputsContainer.children].map(input => this.updateInput(input))
+    }
+
+    removeFieldInput(field){
+        field.input.remove()
+        if(field.input.Link) field.input.Link.remove()
+        this.inputs.slice(this.inputs.indexOf(field.input), 1)
+    }
+
+    addFieldInput(field){
+        let input = Builder.Instance.createElement('i', {class: "input"}, this.inputsContainer)
+        this.GraphBox.addInput(input)
+        input.key = field.key
+        field.input = input
+        input.addEventListener('link', (data)=>{
+            this.updateInput(input)
+        })
+        this.inputs.push(input)
+        return input
     }
 
     updateInput(input){
@@ -124,27 +136,36 @@ export default class FilterBuilder {
         let builder = new filterBuilderClass()
         this.class = filterBuilderClass
         this.label = Builder.Instance.filterBuilderLabels[Builder.Instance.filterBuilderTypes.indexOf(this.class)]
-        this.render = filterBuilderClass.prototype.render
-        this.update = filterBuilderClass.prototype.update
-        this.onUpdate = filterBuilderClass.prototype.onUpdate
-        this.buildLightSettings = filterBuilderClass.prototype.buildLightSettings
         this.fieldsConfiguration = builder.fieldsConfiguration
         this.fields = {}
+
+        Object.getOwnPropertyNames(filterBuilderClass.prototype)
+        .map(property => {
+            if(property == "constructor") return;
+            this[property] = filterBuilderClass.prototype[property]
+        })
+
         this.setFilter(builder.class)
     }
 
     render(){
         this.buildPreview()
-
         this.settings.innerHTML = ""
-
-        /* Generate filter fields */
+        this.initFields()
+        this.buildInputs()
+    }
+    initFields(){
         this.fields = {}
         Object.keys(this.fieldsConfiguration).map(key => {
             let config = this.fieldsConfiguration[key]
             this.fields[key] = this.createField(key, config)
         })
-        this.buildInputs()
+    }
+    updateFields(){
+        Object.keys(this.fieldsConfiguration).map(key => {
+            let config = this.fieldsConfiguration[key]
+            if(!this.fields[key]) this.fields[key] = this.createField(key, config)
+        })
     }
 
     update(){
@@ -182,6 +203,7 @@ export default class FilterBuilder {
 
     createField(key, config){
         let container = Builder.Instance.createElement('div', {class: `input-group`, "data-key":key}, this.settings)
+        if(config.type == "filter") container.classList.add('input')
         let label = Builder.Instance.createElement('strong', {}, container)
         label.innerHTML = key
         let attributes = Object.assign({
@@ -278,7 +300,7 @@ export default class FilterBuilder {
 
     updatePreview(){
         this.previewContainer.innerHTML = ""
-        if(!this.isAllInputConnected) return;
+        //if(!this.isAllInputConnected) return;
         this.previewElement = Builder.Instance.testElement.cloneNode(true)
         this.previewElement.style.filter = `url(#${this.filter.name + "_preview"})`
         this.previewContainer.appendChild(this.previewElement)
@@ -327,10 +349,19 @@ export default class FilterBuilder {
 
     connectTo(filterBuilder, key="in"){
         let filterInput = filterBuilder.getInputByKey(key)
-        this.GraphBox.link(this.output, filterInput)
+        this.connectToInput(filterInput)
     }
 
     connectToInput(input){
         this.GraphBox.link(this.output, input)
+    }
+
+    maximize(){
+        this.element.classList.remove('closed')
+        this.GraphBox.update()
+    }
+    minimize(){
+        this.element.classList.add('closed')
+        this.GraphBox.update()
     }
 }

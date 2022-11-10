@@ -7,6 +7,7 @@ export default class Filter {
         this.element = this.createSVGElement(type, attributes)
         this.element.setAttribute('result', this.name)
 
+        this.filters = []
         this._inFilter = null
     }
 
@@ -21,7 +22,16 @@ export default class Filter {
     }
 
     addFilter(filter){
+        this.filters.push(filter)
         this.element.appendChild(filter.element)
+    }
+    addFilterFromHTML(html){
+        // customize
+        console.log(html)
+    }
+    removeFilter(filter){
+        this.filter.slice(filter.indexOf(filter), 1)
+        if(this.element.contains(filter.element)) filter.element.remove()
     }
 
     createSVGElement(tagName, attributes={}, parent=null){

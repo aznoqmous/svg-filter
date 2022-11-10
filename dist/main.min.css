@@ -145,7 +145,7 @@ body {
     margin-top: 0.5rem; }
     .filter .column .input-group strong {
       width: 5rem; }
-    .filter .column .input-group[data-key="in"], .filter .column .input-group[data-key="in2"] {
+    .filter .column .input-group.input {
       display: none; }
     .filter .column .input-group > select,
     .filter .column .input-group > input {

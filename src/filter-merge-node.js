@@ -1,8 +1,8 @@
 import Filter from "./filter";
 
-export default class FilterMerge extends Filter {
+export default class FilterMergeNode extends Filter {
     constructor(name, input){
-        super("feBlend", {
+        super("feMergeNode", {
             in: input
         }, name)
     }

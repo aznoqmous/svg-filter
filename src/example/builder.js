@@ -36,6 +36,7 @@ export default class Builder {
             
             FilterColorMatrixBuilder,
             FilterConvolveMatrixBuilder,
+            
             FilterSaturateBuilder,
             FilterHueRotateBuilder,
             FilterLuminanceToAlphaBuilder,
@@ -228,6 +229,17 @@ export default class Builder {
     }
 
     getFilterBuilderByName(filterName){
+        let source =null;
+        if(filterName == "SourceGraphic"){
+            this.sourceGraphicBuilder.selectedOutput = this.sourceGraphicBuilder.outputs[0]
+            source = this.sourceGraphicBuilder
+        }
+        if(filterName == "SourceAlpha"){
+            this.sourceGraphicBuilder.selectedOutput = this.sourceGraphicBuilder.outputs[1]
+            source = this.sourceGraphicBuilder
+        }
+        if(source) return source;
+
         let match = this.filterBuilders.filter(f => f.filter.name == filterName)
         return match.length ? match[0] : null
     }
@@ -327,28 +339,19 @@ export default class Builder {
             filterBuilder.render()
         })
         filtersHTML.map((html, i)=>{
+            if(html.tagName == "feMerge") return;
+
             let fb = this.filterBuilders[i]
             let inputs = Object.fromEntries(html.getAttributeNames().filter(a => a == "in" || a == "in2").map(k => [k, html.getAttribute(k)]))
-
             Object.keys(inputs).map(k => {
                 let name = inputs[k]
                 let source =  this.getFilterBuilderByName(name)
-
-                if(name == "SourceGraphic"){
-                    this.sourceGraphicBuilder.selectedOutput = this.sourceGraphicBuilder.outputs[0]
-                    source = this.sourceGraphicBuilder
-                }
-                if(name == "SourceAlpha"){
-                    this.sourceGraphicBuilder.selectedOutput = this.sourceGraphicBuilder.outputs[1]
-                    source = this.sourceGraphicBuilder
-                }
-                if(source){
-                    source.connectTo(fb, k)
-                }
+                if(source) source.connectTo(fb, k)
             })
         })
         let lastFilter = this.filterBuilders[this.filterBuilders.length-1]
         lastFilter.connectTo(this.resultBuilder)
+        this.filterBuilders.map(fb => fb.minimize())
         this.reArrangeBuilders()
     }
 

@@ -56,6 +56,12 @@ export default class SvgFilter {
     }
 
     addFilterFromHTML(html){
+        let filter = this.createFilterFromHTML(html)        
+        this.addFilter(filter)
+        return filter
+    }
+    
+    createFilterFromHTML(html){
         let filter = this.getFilterClassFromHTML(html)
         let attributes = html.getAttributeNames()
         attributes.map(attr => {
@@ -63,7 +69,7 @@ export default class SvgFilter {
             if(attr == "result") filter.name = value
             filter.element.setAttribute(attr, value)
         })
-        this.addFilter(filter)
+        ;[...html.children].map(h => filter.addFilter(this.createFilterFromHTML(h)))
         return filter
     }
 }

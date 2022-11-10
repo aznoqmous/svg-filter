@@ -5,26 +5,71 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
     let b = new Builder(document.querySelectorAll('.examples > img')[0])
     Mouse.bind()
-    /*b.importFromHTML(
+    b.importFromHTML(
         `
 <svg>
     <defs>
-        <filter id="newFilter">
-            <feGaussianBlur stdDeviation="10" result="filter1" in="SourceGraphic">
-            </feGaussianBlur>
-            <feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 19 -10" result="filter2" in="filter1">
-            </feColorMatrix>
-            <feColorMatrix type="hueRotate" values="90" result="filter4" in="filter2">
-            </feColorMatrix>
-            <feOffset dx="10" dy="10" result="filter5" in="filter4">
-            </feOffset>
-            <feBlend result="filter6" in="filter2" in2="filter5">
-            </feBlend>
-        </filter>
+    <filter id="filter">
+    <!-- COLOR -->
+    <feFlood flood-color="#73DCFF" flood-opacity="0.75" result="COLOR-blu"></feFlood>
+    <feFlood flood-color="#9673FF" flood-opacity="0.4" result="COLOR-red"></feFlood>
+    <!-- COLOR END -->
+
+    <!-- Texture -->
+    <feTurbulence baseFrequency=".05" type="fractalNoise" numOctaves="3" seed="0" result="Texture_10"></feTurbulence>
+    <feColorMatrix type="matrix" values="0 0 0 0 0,
+    0 0 0 0 0,
+    0 0 0 0 0,
+    0 0 0 -2.1 1.1" in="Texture_10" result="Texture_20"></feColorMatrix>
+
+    <feColorMatrix result="Texture_30" type="matrix" values="0 0 0 0 0,
+    0 0 0 0 0,
+    0 0 0 0 0,
+    0 0 0 -1.7 1.8" in="Texture_10"></feColorMatrix>
+    <!-- Texture -->
+
+    <!-- FILL -->
+    <feOffset dx="-3" dy="4" in="SourceAlpha" result="FILL_10"></feOffset>
+    <feDisplacementMap scale="17" in="FILL_10" in2="Texture_10" result="FILL_20"></feDisplacementMap>
+    <feComposite operator="in" in="Texture_30" in2="FILL_20" result="FILL_40"></feComposite>
+    <feComposite operator="in" in="COLOR-blu" in2="FILL_40" result="FILL_50"></feComposite>
+    <!-- FILL END-->
+
+    <!-- OUTLINE -->
+    <feMorphology operator="dilate" radius="3" in="SourceAlpha" result="OUTLINE_10"></feMorphology>
+    <feComposite operator="out" in="OUTLINE_10" in2="SourceAlpha" result="OUTLINE_20"></feComposite>
+    <feDisplacementMap scale="7" in="OUTLINE_20" in2="Texture_10" result="OUTLINE_30"></feDisplacementMap>
+    <feComposite operator="arithmetic" k2="-1" k3="1" in="Texture_20" in2="OUTLINE_30" result="OUTLINE_40"></feComposite>
+    <!-- OUTLINE END-->
+
+    <!-- BEVEL OUTLINE -->
+    <feConvolveMatrix order="8,8" divisor="1" kernelMatrix="1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 " in="SourceAlpha" result="BEVEL_10"></feConvolveMatrix>
+    <feMorphology operator="dilate" radius="2" in="BEVEL_10" result="BEVEL_20"></feMorphology>
+    <feComposite operator="out" in="BEVEL_20" in2="BEVEL_10" result="BEVEL_30"></feComposite>
+    <feDisplacementMap scale="7" in="BEVEL_30" in2="Texture_10" result="BEVEL_40"></feDisplacementMap>
+    <feComposite operator="arithmetic" k2="-1" k3="1" in="Texture_20" in2="BEVEL_40" result="BEVEL_50"></feComposite>
+    <feOffset dx="-7" dy="-7" in="BEVEL_50" result="BEVEL_60"></feOffset>
+    <feComposite operator="out" in="BEVEL_60" in2="OUTLINE_10" result="BEVEL_70"></feComposite>
+    <!-- BEVEL OUTLINE END -->
+
+    <!-- BEVEL FILL -->
+    <feOffset dx="-9" dy="-9" in="BEVEL_10" result="BEVEL-FILL_10"></feOffset>
+    <feComposite operator="out" in="BEVEL-FILL_10" in2="OUTLINE_10" result="BEVEL-FILL_20"></feComposite>
+    <feDisplacementMap scale="17" in="BEVEL-FILL_20" in2="Texture_10" result="BEVEL-FILL_30"></feDisplacementMap>
+    <feComposite operator="in" in="COLOR-red" in2="BEVEL-FILL_30" result="BEVEL-FILL_50"></feComposite> <!-- -->
+    <!-- BEVEL FILL END-->
+
+    <feMerge result="merge2">
+     <feMergeNode in="BEVEL-FILL_50"></feMergeNode>
+     <feMergeNode in="BEVEL_70"></feMergeNode>
+     <feMergeNode in="FILL_50"></feMergeNode>
+      <feMergeNode in="OUTLINE_40"></feMergeNode>
+    </feMerge>
+  </filter>
     </defs>
 </svg>
         `
-    )*/
+    )
 })
 
 export default class Blob {
