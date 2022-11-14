@@ -4,8 +4,8 @@ body {
         display: none;
     }
     > .container {
-        width: calc(100% - 32rem);
-        margin-right: 2rem;
+        width: 100%;
+        height: 100%;
         .filters {
             margin-top: 1rem;
             display: flex;

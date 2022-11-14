@@ -1,11 +1,16 @@
+import Builder from "./builder";
 import Vector2 from "./Vector2";
 
 export default class Draggable {
     constructor(element, opts={}){
         this.opts = Object.assign({
             parentBounds: false,
-            gridSize: 0
+            gridSize: 0,
+            auto: true
         }, opts)
+
+        this.isActive = this.opts.auto
+
         this.element = element
         this.element.Draggable = this
         this.startPosition = new Vector2()
@@ -21,6 +26,7 @@ export default class Draggable {
     }
 
     handleMouseDown(e){
+        if(!this.isActive) return;
         if(e.target != this.element && (
             ['input','select','textarea'].includes(e.target.tagName.toLowerCase())
             || e.target.Draggable
@@ -46,13 +52,13 @@ export default class Draggable {
     }
 
     update(){
-        this.updateBounds()
+        if(this.opts.parentBounds) this.updateBounds()
         this.setPosition(this.currentOffset)
     }
 
     setPosition(position){
         this.currentOffset = position
-        if(this.bounds) this.applyBounds(this.currentOffset)
+        if(this.opts.parentBounds && this.bounds) this.applyBounds(this.currentOffset)
         if(this.opts.gridSize) this.applyGridSize(this.currentOffset)
         this.applyCurrentOffset()
     }
@@ -116,7 +122,8 @@ export default class Draggable {
         this.applyCurrentOffset()
     }
 
-    applyCurrentOffset(){
-        this.element.style.transform = `translate(${this.currentOffset.x}px, ${this.currentOffset.y}px)`
+     applyCurrentOffset(){
+        this.element.style.transform = 
+        `translate(${this.currentOffset.x}px, ${this.currentOffset.y}px)`
     }
 }

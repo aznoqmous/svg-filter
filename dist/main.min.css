@@ -50,8 +50,8 @@ body {
   body > .examples {
     display: none; }
   body > .container {
-    width: calc(100% - 32rem);
-    margin-right: 2rem; }
+    width: 100%;
+    height: 100%; }
     body > .container .filters {
       margin-top: 1rem;
       display: flex;
@@ -91,8 +91,6 @@ body {
       z-index: 10;
       opacity: 0;
       cursor: pointer; }
-  .filter.result {
-    right: 0; }
   .filter.selected {
     outline: 3px solid #4c4c4c;
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2); }

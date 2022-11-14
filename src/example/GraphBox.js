@@ -32,7 +32,7 @@ export default class GraphBox extends EventTarget{
 
     bindElement(){
         this.Draggable = new Draggable(this.element, {
-            parentBounds: true
+            parentBounds: false
         })
         this.element.addEventListener('dragstart', ()=>{
             if(!this.selectable.selectedElements.includes(this.element)) return;

@@ -1,3 +1,4 @@
+import Builder from "./builder"
 import Vector2 from "./Vector2"
 
 export default class Selectable {
@@ -9,17 +10,20 @@ export default class Selectable {
             style: "solid",
             radius: null
         }, opts.selectBox || {})
-        this.opts = Object.assign({}, opts)
+        this.opts = Object.assign({
+            selector: null
+        }, opts)
+        this.selector = this.opts.selector
         this.element = element
-        
         this.build()
         this.bind()
-        
+        this.isActive = true
         this.selectedElements = []
     }
 
     get selectableElements(){
-        return [...this.element.children].filter(e => e != this.selectBox)
+        let children = this.selector ? [...this.element.querySelectorAll(this.selector)] : [...this.element.children]
+        return children.filter(e => e != this.selectBox)
     }
 
     build(){
@@ -37,13 +41,13 @@ export default class Selectable {
     }
 
     handleMouseDown(e){
+        if(!this.isActive) return;
         let overlappingElements = this.selectableElements.filter(se => se.contains(e.target) || se == e.target)
         let targetElement =  overlappingElements.length ? overlappingElements[0] : null
         if(this.selectedElements.length && !targetElement) this.unselectAll()
         if(this.selectedElements.length && !this.selectedElements.includes(targetElement)) this.unselectAll()
-        if(targetElement) this.select(targetElement)
-        
-        if(e.target != this.element) return;
+        if(targetElement) return this.select(targetElement)
+
         e.preventDefault()
         if(this.isDragging) return;
         this.startDrag(new Vector2(e.pageX, e.pageY))

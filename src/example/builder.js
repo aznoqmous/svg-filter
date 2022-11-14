@@ -1,5 +1,5 @@
 import SvgFilter from "../svg-filter"
-import Draggable from "./Draggable"
+import Draggable from "./draggable"
 import FilterBlendBuilder from "./filter-blend-builder"
 import FilterBuilder from "./filter-builder"
 import FilterColorMatrixBuilder from "./filter-color-matrix-builder"
@@ -17,6 +17,8 @@ import FilterOffsetBuilder from "./filter-offset-builder"
 import FilterSaturateBuilder from "./filter-saturate-builder"
 import FilterSpecularLightingBuilder from "./filter-specular-lighting-builder"
 import FilterTurbulenceBuilder from "./filter-turbulence-builder"
+import GraphBox from "./GraphBox"
+import Keyboard from "./Keyboard"
 import Mouse from "./Mouse"
 import ResultBuilder from "./result-builder"
 import Selectable from "./Selectable"
@@ -84,13 +86,14 @@ export default class Builder {
         this.svgNameInput = this.container.querySelector('[name="name"')
         this.template = this.container.querySelector('template')
         this.filtersContainer = this.container.querySelector('.filters')
-        this.selectable = new Selectable(this.filtersContainer, {
+        this.selectable = new Selectable(this.container, {
             selectBox: {
                 size: "3px",
                 color: "#aaa",
                 style: "dashed",
                 radius: "3px"
-            }
+            },
+            selector: ".filter"
         })
         this.resultContainer = document.querySelector('.resultHTML')
 
@@ -101,9 +104,17 @@ export default class Builder {
 
         this.buildFilterSelect()
         this.hideFilterSelect()
+
+        this.zoom = 1
+        this.effectiveZoom = 1
+        this.offset = new Vector2()
     }
 
     bind(){
+        window.addEventListener('wheel', (e)=>{
+            if(e.deltaY > 0) this.zoomIn()
+            else this.zoomOut()
+        })
         window.addEventListener('keydown', (e)=>{
             if(e.key == "Delete" || e.key == "BackSpace"){
                 if(this.selectable.selectedElements.length){
@@ -112,18 +123,60 @@ export default class Builder {
                     })
                 }
             }
-            if(e.key == " "){
-                e.preventDefault()
-                this.showFilterSelect()
-            }
         })
-        
+
         window.addEventListener('click', ()=>{
             this.hideFilterSelect()
+        })
+        this.container.addEventListener('mousedown', this.handleMouseDown.bind(this))
+        this.container.addEventListener('mousemove', this.handleMouseMove.bind(this))
+        this.container.addEventListener('mouseup', this.handleMouseUp.bind(this))
+        this.container.addEventListener('contextmenu', (e)=>{
+            e.preventDefault()
+            this.showFilterSelect()
         })
         this.svgNameInput.addEventListener('input', ()=>{
             this.updateResult()
         })
+    }
+    
+    getEffectiveZoom(){
+        return Math.pow(1.1, this.zoom-1)
+    }
+    applyTransform(){
+        this.filtersContainer.style.transform = `scale(${this.effectiveZoom}) translate(${this.offset.x}px, ${this.offset.y}px)`
+        GraphBox.instances.map(gb => gb.update())
+    }
+    zoomIn(){
+        this.zoom++
+        this.effectiveZoom = this.getEffectiveZoom()
+        this.applyTransform()
+    }
+    zoomOut(){
+        this.zoom--
+        this.effectiveZoom = this.getEffectiveZoom()
+        this.applyTransform()
+    }
+
+    handleMouseDown(){
+        if(Keyboard.isUp(' ')) return;
+        this.selectable.endDrag()
+        this.selectable.isActive = false
+        this.startDragPosition = Mouse.position.clone().substract(this.offset)
+        this.isDragging = true
+    }
+    handleMouseMove(){
+        if(!this.isDragging) return;
+        this.offset = Mouse.position.clone().substract(this.startDragPosition)
+        this.applyTransform()
+    }
+    handleMouseUp(){
+        this.endDrag()
+    }
+    endDrag(){
+        console.log("endrag")
+        this.isDragging = false
+        this.selectable.isActive = true
     }
 
     buildFilterSelect(){

@@ -1,11 +1,13 @@
 import Builder from "./example/builder"
 import Mouse from "./example/Mouse"
 import "../scss/style.scss"
+import Keyboard from "./example/Keyboard"
 document.addEventListener('DOMContentLoaded', ()=>{
 
     let b = new Builder(document.querySelectorAll('.examples > img')[0])
     Mouse.bind()
-    b.importFromHTML(
+    Keyboard.bind()
+    /*b.importFromHTML(
         `
 <svg>
     <defs>
@@ -69,7 +71,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     </defs>
 </svg>
         `
-    )
+    )*/
 })
 
 export default class Blob {
