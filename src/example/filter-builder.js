@@ -2,6 +2,7 @@ import SvgFilter from "../svg-filter"
 import Builder from "./builder"
 import GraphBox from "./GraphBox"
 import SourceGraphicBuilder from "./source-graphic-builder"
+import WorkSpace from "./WorkSpace"
 
 export default class FilterBuilder extends EventTarget {
     constructor(label, filterClass=null, fieldsConfiguration={}){
@@ -35,7 +36,7 @@ export default class FilterBuilder extends EventTarget {
             Builder.Instance.update()
         })
         
-        this.GraphBox = new GraphBox(Builder.Instance.selectable, this.element, [], [])
+        this.GraphBox = new GraphBox(WorkSpace.Instance.selectable, this.element, [], [])
         this.inputsContainer = Builder.Instance.createElement("div", { class: "inputs"}, this.element)
         this.outputsContainer = Builder.Instance.createElement("div", { class: "outputs"}, this.element)
         

@@ -1,5 +1,6 @@
 import Builder from "./builder"
 import GraphBox from "./GraphBox"
+import WorkSpace from "./WorkSpace"
 
 export default class SourceGraphicBuilder {
 
@@ -13,7 +14,7 @@ export default class SourceGraphicBuilder {
         this.previewElement = Builder.Instance.testElement.cloneNode(true)
         this.previewContainer.appendChild(this.previewElement)
         this.outputsContainer = Builder.Instance.createElement("div", { class: "outputs"}, this.element)
-        this.GraphBox = new GraphBox(Builder.Instance.selectable, this.element, [], [])
+        this.GraphBox = new GraphBox(WorkSpace.Instance.selectable, this.element, [], [])
         
         let outputValues = ["SourceGraphic", "SourceAlpha"] 
         

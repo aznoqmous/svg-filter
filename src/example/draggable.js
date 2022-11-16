@@ -1,5 +1,5 @@
-import Builder from "./builder";
 import Vector2 from "./Vector2";
+import WorkSpace from "./WorkSpace";
 
 export default class Draggable {
     constructor(element, opts={}){
@@ -18,6 +18,10 @@ export default class Draggable {
         this.mousePosition = new Vector2()
         this.bind()
     }
+    
+    get zoom(){
+        return WorkSpace.Instance.effectiveZoom
+    }
 
     bind(){
         this.element.addEventListener('mousedown', this.handleMouseDown.bind(this))
@@ -33,7 +37,7 @@ export default class Draggable {
         )) return;
         e.preventDefault()
         if(this.isDragging) return;
-        this.startDrag(new Vector2(e.pageX, e.pageY))
+        this.startDrag(new Vector2(e.pageX/this.zoom, e.pageY/this.zoom))
     }
 
     handleMouseUp(){
@@ -43,7 +47,7 @@ export default class Draggable {
     handleMouseMove(e){
         if(!this.isDragging) return;
         
-        this.mousePosition = new Vector2(e.pageX, e.pageY)
+        this.mousePosition = new Vector2(e.pageX/this.zoom, e.pageY/this.zoom)
         this.currentOffset = this.mousePosition.clone().substract(this.startPosition)
         
         this.setPosition(this.currentOffset)

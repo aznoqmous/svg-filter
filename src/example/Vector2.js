@@ -8,15 +8,27 @@ export default class Vector2 {
         return new Vector2(this.x, this.y)
     }
 
-    add(v){
-        this.x += v.x
-        this.y += v.y
+    add(vector){
+        this.x += vector.x
+        this.y += vector.y
         return this
     }
 
-    substract(v){
-        this.x -= v.x
-        this.y -= v.y
+    substract(vector){
+        this.x -= vector.x
+        this.y -= vector.y
+        return this
+    }
+
+    multiply(vector){
+        this.x *= vector.x
+        this.y *= vector.y
+        return this
+    }
+
+    divide(vector){
+        this.x /= vector.x
+        this.y /= vector.y
         return this
     }
 
@@ -24,5 +36,25 @@ export default class Vector2 {
         this.x = Math.abs(this.x)
         this.y = Math.abs(this.y)
         return this
+    }
+
+    multiplyBy(value){
+        this.x *= value
+        this.y *= value
+        return this
+    }
+
+    divideBy(value){
+        this.x /= value
+        this.y /= value
+        return this
+    }
+
+    get magnitude(){
+        return Math.pow(2, this.x) + Math.pow(2, this.y)
+    }
+
+    get sqrMagnitude(){
+        return Math.sqrt(this.magnitude)
     }
 }

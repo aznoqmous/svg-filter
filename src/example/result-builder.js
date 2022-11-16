@@ -1,6 +1,7 @@
 import SvgFilter from "../svg-filter"
 import Builder from "./builder"
 import GraphBox from "./GraphBox"
+import WorkSpace from "./WorkSpace"
 
 export default class ResultBuilder {
 
@@ -12,7 +13,7 @@ export default class ResultBuilder {
         this.element.filterBuilder = this
         this.previewContainer = Builder.Instance.createElement("div", {class:"preview"}, this.element)
         this.inputsContainer = Builder.Instance.createElement("div", { class: "inputs"}, this.element)
-        this.GraphBox = new GraphBox(Builder.Instance.selectable, this.element, [], [])
+        this.GraphBox = new GraphBox(WorkSpace.Instance.selectable, this.element, [], [])
         this.input = Builder.Instance.createElement('i', {class: "input"}, this.inputsContainer)
         this.GraphBox.addInput(this.input)
 

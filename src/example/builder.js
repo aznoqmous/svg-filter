@@ -1,5 +1,5 @@
 import SvgFilter from "../svg-filter"
-import Draggable from "./draggable"
+import Draggable from "./Draggable"
 import FilterBlendBuilder from "./filter-blend-builder"
 import FilterBuilder from "./filter-builder"
 import FilterColorMatrixBuilder from "./filter-color-matrix-builder"
@@ -24,6 +24,7 @@ import ResultBuilder from "./result-builder"
 import Selectable from "./Selectable"
 import SourceGraphicBuilder from "./source-graphic-builder"
 import Vector2 from "./Vector2"
+import WorkSpace from "./WorkSpace"
 
 export default class Builder {
     constructor(testElement){
@@ -80,21 +81,15 @@ export default class Builder {
     }
 
     build(){
+        
         this.svgFilter = new SvgFilter("testFilter")
         
         this.container = document.querySelector('.container')
-        this.svgNameInput = this.container.querySelector('[name="name"')
+        this.workSpace = new WorkSpace(this.container)
+        
+        this.svgNameInput = this.container.querySelector('[name="name"]')
         this.template = this.container.querySelector('template')
         this.filtersContainer = this.container.querySelector('.filters')
-        this.selectable = new Selectable(this.container, {
-            selectBox: {
-                size: "3px",
-                color: "#aaa",
-                style: "dashed",
-                radius: "3px"
-            },
-            selector: ".filter"
-        })
         this.resultContainer = document.querySelector('.resultHTML')
 
         this.sourceGraphicBuilder = new SourceGraphicBuilder()
@@ -102,35 +97,16 @@ export default class Builder {
         this.resultBuilder = new ResultBuilder()
         this.resultBuilder.build()
 
+
         this.buildFilterSelect()
         this.hideFilterSelect()
 
-        this.zoom = 1
-        this.effectiveZoom = 1
-        this.offset = new Vector2()
     }
 
     bind(){
-        window.addEventListener('wheel', (e)=>{
-            if(e.deltaY > 0) this.zoomIn()
-            else this.zoomOut()
-        })
-        window.addEventListener('keydown', (e)=>{
-            if(e.key == "Delete" || e.key == "BackSpace"){
-                if(this.selectable.selectedElements.length){
-                    this.selectable.selectedElements.map(e => {
-                        e.filterBuilder.delete()
-                    })
-                }
-            }
-        })
-
         window.addEventListener('click', ()=>{
             this.hideFilterSelect()
         })
-        this.container.addEventListener('mousedown', this.handleMouseDown.bind(this))
-        this.container.addEventListener('mousemove', this.handleMouseMove.bind(this))
-        this.container.addEventListener('mouseup', this.handleMouseUp.bind(this))
         this.container.addEventListener('contextmenu', (e)=>{
             e.preventDefault()
             this.showFilterSelect()
@@ -138,45 +114,6 @@ export default class Builder {
         this.svgNameInput.addEventListener('input', ()=>{
             this.updateResult()
         })
-    }
-    
-    getEffectiveZoom(){
-        return Math.pow(1.1, this.zoom-1)
-    }
-    applyTransform(){
-        this.filtersContainer.style.transform = `scale(${this.effectiveZoom}) translate(${this.offset.x}px, ${this.offset.y}px)`
-        GraphBox.instances.map(gb => gb.update())
-    }
-    zoomIn(){
-        this.zoom++
-        this.effectiveZoom = this.getEffectiveZoom()
-        this.applyTransform()
-    }
-    zoomOut(){
-        this.zoom--
-        this.effectiveZoom = this.getEffectiveZoom()
-        this.applyTransform()
-    }
-
-    handleMouseDown(){
-        if(Keyboard.isUp(' ')) return;
-        this.selectable.endDrag()
-        this.selectable.isActive = false
-        this.startDragPosition = Mouse.position.clone().substract(this.offset)
-        this.isDragging = true
-    }
-    handleMouseMove(){
-        if(!this.isDragging) return;
-        this.offset = Mouse.position.clone().substract(this.startDragPosition)
-        this.applyTransform()
-    }
-    handleMouseUp(){
-        this.endDrag()
-    }
-    endDrag(){
-        console.log("endrag")
-        this.isDragging = false
-        this.selectable.isActive = true
     }
 
     buildFilterSelect(){
