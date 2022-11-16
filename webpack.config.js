@@ -40,6 +40,7 @@ module.exports = {
             },
             {test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: 'file-loader'},
             {test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: "file-loader"},
+            {test: /\.html(\?v=\d+\.\d+\.\d+)?$/, loader: "raw-loader"},
         ]
     },
     plugins: [

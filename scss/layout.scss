@@ -1,5 +1,36 @@
 body {
+    font-family: "DM Sans";
+    background: $color_black;
+    color: $color_white;
+    display: flex;
+    font-size: 0.8rem;
     overflow: hidden;
+    header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        padding: 0.5rem 1rem;
+        box-shadow: 0 0 2px rgba(0,0,0,.2);
+        background: $color_dark;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        h1 {
+            font-size: 1rem;
+        }
+        .actions {
+            @include row(center, center);
+            gap: 1rem;
+            li {
+                list-style: none;
+                cursor: pointer;
+                @include row(center, center);
+                gap: 0.5rem;
+            }
+        }
+    }
     > .examples {
         display: none;
     }
@@ -7,11 +38,11 @@ body {
         width: 100%;
         height: 100%;
         .filters {
-            margin-top: 1rem;
+            margin: 3.5rem 1rem;
             display: flex;
             flex-direction: column;
             height: calc(100vh - 7rem);
-            width: 100%;
+            width: calc(100% - 2rem);
             position: relative;
         }
     }

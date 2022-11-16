@@ -40,7 +40,7 @@ export default class FilterMergeBuilder extends FilterBuilder
 
     updateInput(input){
         if(this.inputFilters[input.key]) this.filter.removeFilter(this.inputFilters[input.key])
-        let filter = new FilterMergeNode(this.getLinkedFilterName(input))
+        let filter = new FilterMergeNode("", this.getLinkedFilterName(input))
         this.inputFilters[input.key] = filter
         this.filter.addFilter(filter)
         super.updateInput(input)

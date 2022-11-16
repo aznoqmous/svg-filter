@@ -1,4 +1,5 @@
 import SvgFilter from "../svg-filter"
+import Utils from "../utils"
 import Draggable from "./Draggable"
 import FilterBlendBuilder from "./filter-blend-builder"
 import FilterBuilder from "./filter-builder"
@@ -97,10 +98,8 @@ export default class Builder {
         this.resultBuilder = new ResultBuilder()
         this.resultBuilder.build()
 
-
         this.buildFilterSelect()
         this.hideFilterSelect()
-
     }
 
     bind(){
@@ -187,6 +186,7 @@ export default class Builder {
     
     removeFilterBuilder(filterBuilder){
         this.filterBuilders.splice(this.filterBuilders.indexOf(filterBuilder), 1)
+        this.reorderBuilders()
     }
 
     addFilterBuilder(position=null, filterBuilderType=null){
@@ -242,7 +242,6 @@ export default class Builder {
         this.filterBuilders.map(fb => fb.update())
         this.resultBuilder.updatePreview()
         this.svgFilter.setFilters(this.activeFilters)
-        
         this.updateResult()
     }
 
@@ -317,7 +316,14 @@ export default class Builder {
         })
     }
 
+    reset(){
+        while(this.filterBuilders.length) this.filterBuilders[0].delete()
+        Utils.resetUuids()
+        this.update()
+    }
+
     importFromHTML(html){
+        this.reset()
         let shadow = document.createElement('div')
         shadow.innerHTML = html
         let filtersHTML = [...shadow.querySelectorAll('filter > *')]
@@ -330,7 +336,6 @@ export default class Builder {
         })
         filtersHTML.map((html, i)=>{
             if(html.tagName == "feMerge") return;
-
             let fb = this.filterBuilders[i]
             let inputs = Object.fromEntries(html.getAttributeNames().filter(a => a == "in" || a == "in2").map(k => [k, html.getAttribute(k)]))
             Object.keys(inputs).map(k => {
@@ -347,6 +352,17 @@ export default class Builder {
 
     reArrangeBuilders(){
         this.reorderBuilders()
+        
+        let groups = []
+        this.filterBuilders.map(fb => {
+            if(fb.GraphBox.outputs[0]?.Links.length == 1){
+                let linked = fb.GraphBox.outputs[0].Links[0].input.GraphBox.element.filterBuilder
+                let group = [fb, linked]
+                if(group.includes(this.resultBuilder)) return;
+                groups.push([fb, linked])
+            }
+        })
+        
         let parentRect = this.container.getBoundingClientRect()
         let sourceWidth = this.sourceGraphicBuilder.GraphBox.element.getBoundingClientRect().width + 10
         let resultWidth = this.resultBuilder.GraphBox.element.getBoundingClientRect().width + 10
@@ -354,8 +370,16 @@ export default class Builder {
         this.sourceGraphicBuilder.GraphBox.Draggable.setPosition(new Vector2(0,0))
         this.filterBuilders.map((fb,i) => {
             fb.GraphBox.Draggable.setPosition(new Vector2(sourceWidth + i*usableWidth/this.filterBuilders.length, 0))
-            fb.GraphBox.update()
         })
+        this.resultBuilder.GraphBox.Draggable.setPosition(new Vector2(sourceWidth + usableWidth, 0))
+
+        groups.map((group, y) => {
+            group.map((fb, x)=>{
+                fb.GraphBox.Draggable.setPosition(new Vector2(fb.GraphBox.Draggable.currentOffset.x, y * 160))
+            })
+        })
+
+        this.filterBuilders.map(fb => fb.GraphBox.update())
     }
 
     static get Instance(){

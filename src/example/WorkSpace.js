@@ -1,4 +1,5 @@
 import Builder from "./builder"
+import Popup from "./controllers/Popup"
 import GraphBox from "./GraphBox"
 import Keyboard from "./Keyboard"
 import Mouse from "./Mouse"
@@ -28,14 +29,16 @@ export default class WorkSpace {
 
     bind(){
         window.addEventListener('wheel', (e)=>{
+            if(Popup.activePopup) return;
             if(e.deltaY > 0) this.zoomIn()
             else this.zoomOut()
         })
 
         window.addEventListener('keydown', (e)=>{
+            if(Popup.activePopup) return;
             if(e.key == "Delete" || e.key == "BackSpace"){
-                if(Builder.Instance.selectable.selectedElements.length){
-                    Builder.Instance.selectable.selectedElements.map(e => {
+                if(this.selectable.selectedElements.length){
+                    this.selectable.selectedElements.map(e => {
                         e.filterBuilder.delete()
                     })
                 }
@@ -49,10 +52,6 @@ export default class WorkSpace {
                 this.container.style.cursor = null
             }
         )
-        Keyboard.bindKey('a', ()=> {
-            this.moveTowardMouse()
-            this.applyTransform()
-        })
         this.container.addEventListener('mousedown', this.handleMouseDown.bind(this))
         this.container.addEventListener('mousemove', this.handleMouseMove.bind(this))
         this.container.addEventListener('mouseup', this.handleMouseUp.bind(this))
@@ -90,6 +89,7 @@ export default class WorkSpace {
     }
 
     handleMouseDown(){
+        if(Popup.activePopup) return;
         if(Keyboard.isUp(' ')) return;
         this.selectable.endDrag()
         this.selectable.isActive = false
@@ -97,11 +97,13 @@ export default class WorkSpace {
         this.isDragging = true
     }
     handleMouseMove(){
+        if(Popup.activePopup) return;
         if(!this.isDragging) return;
         this.offset = Mouse.position.divideBy(this.effectiveZoom).substract(this.startDragPosition)
         this.applyTransform()
     }
     handleMouseUp(){
+        if(Popup.activePopup) return;
         this.endDrag()
     }
     endDrag(){

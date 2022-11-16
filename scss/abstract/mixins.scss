@@ -1,0 +1,33 @@
+@mixin row($horizontal: flex-start, $vertical: flex-start){
+    display: flex;
+    flex-direction: row;
+    justify-content: $horizontal;
+    align-items: $vertical;
+  }
+  @mixin column($horizontal: flex-start, $vertical: flex-start){
+    display: flex;
+    flex-direction: column;
+    justify-content: $vertical;
+    align-items: $horizontal;
+  }
+  @mixin center {
+    @include row(center, center);
+  }
+  @mixin size($width: 100%, $height: 100%){
+    width: $width;
+    height: $height;
+  }
+  @mixin square($size){
+    @include size($size, $size);
+  }
+  
+  @mixin headings {
+    h1, h2, h3, h4, h5, h6 {
+      @content;
+    }
+  }
+  
+  @mixin transition($type: all, $duration:0.4s) {
+    transition: $type $duration ease-out;
+  }
+  

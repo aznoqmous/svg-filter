@@ -2,15 +2,16 @@
     box-sizing: border-box;
     padding: 0;
     margin: 0;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    -webkit-font-smoothing: subpixel-antialiased;
 }
-
-body {
-    font-family: "DM Sans";
-    padding: 2rem;
-    background: $color_black;
+*::selection {
+    background: $color_blue;
     color: $color_white;
-    display: flex;
-    font-size: 0.8rem;
+}
+body {
+    
     
     > svg:not(.leader-line) {
         display: none;

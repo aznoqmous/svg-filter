@@ -163,7 +163,14 @@ export class Link {
     }
 
     updateLine(){
-        this.Line.position()
+        if(this.nextUpdate) {
+            this.Line.hide()
+            clearTimeout(this.nextUpdate)
+        }
+        this.nextUpdate = setTimeout(()=> {
+            this.Line.position()
+            this.Line.show()
+        })
     }
 
     remove(){

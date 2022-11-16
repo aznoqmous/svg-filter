@@ -1,0 +1,53 @@
+.popup {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: $border_radius;
+    min-width: 30rem;
+    max-width: calc(100vw - 2rem);
+    box-shadow: 0 0 0.5rem rgba(0,0,0,0.2);
+    overflow: hidden;
+    .header {
+        @include row(space-between);
+        padding: 1rem;
+        background: rgba($color_dark, 0.99);
+        h2 {}
+        i {
+            cursor: pointer;
+        }
+    }
+    .content {
+        @include column;
+        padding: 1rem;
+        background: rgba($color_grey_2, 0.99);
+        
+        label {
+            font-weight: bold;
+            &:not(:first-child){
+                margin-top: 1rem;
+            }
+        }
+        textarea {
+            resize: vertical;
+            min-height: 5rem;
+        }
+        textarea, input {
+            width: 100%;
+            padding: 0.5rem;
+        }
+        button, textarea, input {
+            background: $color_dark;
+            border-radius: $border_radius;
+            outline: none;
+            margin-top: 0.5rem;
+            color: white;
+            border: 1px solid $color_grey;
+        }
+        button {
+            padding: 0.5rem 1rem;
+            font-weight: bold;
+        }
+    }
+
+}
