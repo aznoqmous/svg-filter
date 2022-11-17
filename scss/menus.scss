@@ -21,7 +21,18 @@
         @include column;
         padding: 1rem;
         background: rgba($color_grey_2, 0.99);
-        
+        @include headings {
+            margin-bottom: 0.5em;
+            &:not(:first-child){
+                margin-top: 1.5rem;
+            }
+        }
+        ul, ol {
+            padding-left: 1em;
+        }
+        p + p{
+            margin-top: 0.5em;
+        }
         label {
             font-weight: bold;
             &:not(:first-child){
@@ -30,7 +41,7 @@
         }
         textarea {
             resize: vertical;
-            min-height: 5rem;
+            min-height: 15rem;
         }
         textarea, input {
             width: 100%;
@@ -47,6 +58,11 @@
         button {
             padding: 0.5rem 1rem;
             font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            &:hover {
+                background: $color_grey;
+            }
         }
     }
 

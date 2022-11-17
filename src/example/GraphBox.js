@@ -1,12 +1,16 @@
 import Draggable from "./Draggable"
 
+
 export default class GraphBox extends EventTarget{
+    
+    static colorIndex = 0
 
     constructor(selectable, element, inputs, outputs){
         super()
-
+        this.constructor.colorIndex += 360 / 3 + 33
+        this.color = `hsl(${this.constructor.colorIndex}deg, 70%, 70%)`
         this.lineOptions = {
-            color: '#2eb2ff',
+            color: this.color,
             size: 2,
             dropShadow: {
                 dx: 0,
@@ -17,9 +21,10 @@ export default class GraphBox extends EventTarget{
             startSocket: 'right',
             endSocket: 'left'
         }
-
+        
         this.selectable = selectable
         this.element = element
+        this.element.style.setProperty("--color", this.color)
         this.inputs = [...inputs]
         this.outputs = [...outputs]
 
@@ -101,7 +106,8 @@ export default class GraphBox extends EventTarget{
     }
 
     link(output, input){
-        new Link(input, output)
+        input.style.setProperty('--color', this.color)
+        new Link(input, output, this.color)
     }
 
     registerInstance(){
@@ -117,10 +123,11 @@ export default class GraphBox extends EventTarget{
 }
 
 export class Link {
-    constructor(input, output){
+    constructor(input, output, color){
         this.lineOptions = {
-            color: '#2eb2ff',
-            endPlug: 'arrow3',
+            //color: '#2eb2ff',
+            color,
+            endPlug: 'behind',
             size: 2,
             dropShadow: {
                 dx: 0,

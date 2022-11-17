@@ -1,9 +1,9 @@
 import Filter from "./filter";
 
 export default class FilterMergeNode extends Filter {
-    constructor(name, input){
+    constructor(input){
         super("feMergeNode", {
             in: input
-        }, name)
+        }, "")
     }
 }

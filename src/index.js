@@ -9,7 +9,27 @@ document.addEventListener('DOMContentLoaded', ()=>{
     Mouse.bind()
     Keyboard.bind()
     b.importFromHTML(`
-    <svg><defs><filter id="testFilter"><feGaussianBlur stdDeviation="10" result="filter108" in="SourceGraphic"></feGaussianBlur><feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 19 -10" result="filter110" in="filter108"></feColorMatrix><feOffset dx="5" dy="10" result="filter112" in="filter110"></feOffset><feColorMatrix type="hueRotate" values="0" result="filter113" in="filter112"></feColorMatrix><feOffset dx="10" dy="10" result="filter117" in="filter113"></feOffset><feColorMatrix type="hueRotate" values="180" result="filter118" in="filter117"></feColorMatrix><feColorMatrix type="hueRotate" values="90" result="filter111" in="filter110"></feColorMatrix><feMerge result="filter114" in1="filter113" in2="filter111" in3="filter118"><feMergeNode in="filter113" result="filter115"></feMergeNode><feMergeNode in="filter111" result="filter116"></feMergeNode><feMergeNode in="filter118" result="filter119"></feMergeNode><feMergeNode in="filter113" result="filter229"></feMergeNode><feMergeNode in="filter111" result="filter230"></feMergeNode><feMergeNode in="filter118" result="filter231"></feMergeNode></feMerge></filter></defs></svg>    `)
+    <svg>
+    <defs>
+        <filter id="testFilter">
+            <feGaussianBlur stdDeviation="10" result="FilterGaussianBlur1" in="SourceGraphic">
+            </feGaussianBlur>
+            <feOffset dx="10" dy="10" result="FilterOffset1" in="FilterColorMatrix1">
+            </feOffset>
+            <feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 19 -10" result="FilterColorMatrix1" in="FilterGaussianBlur1">
+            </feColorMatrix>
+            <feColorMatrix type="hueRotate" values="90" result="FilterHueRotate1" in="FilterOffset1">
+            </feColorMatrix>
+            <feMerge result="FilterMerge1" in1="FilterHueRotate1" in2="FilterColorMatrix1">
+                <feMergeNode in="FilterHueRotate1" result="">
+                </feMergeNode>
+                <feMergeNode in="FilterColorMatrix1" result="">
+                </feMergeNode>
+            </feMerge>
+        </filter>
+    </defs>
+</svg>
+    `)
     new Menu()
     /*b.importFromHTML(
         `

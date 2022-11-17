@@ -1,6 +1,7 @@
 import Builder from "./builder";
 import Popup from "./controllers/Popup";
 import PopupExport from "./controllers/PopupExport";
+import PopupHelp from "./controllers/PopupHelp";
 import PopupImport from "./controllers/PopupImport";
 
 export default class Menu {
@@ -22,6 +23,11 @@ export default class Menu {
                 click: (e)=>{
                     Builder.Instance.reset()
                 }
+            },
+            help: {
+                label: "",
+                icon: 'help',
+                popup: PopupHelp
             }
         }
         this.build()

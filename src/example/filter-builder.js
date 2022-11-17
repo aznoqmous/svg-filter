@@ -73,8 +73,14 @@ export default class FilterBuilder extends EventTarget {
 
     removeFieldInput(field){
         field.input.remove()
+        field.value = null
         if(field.input.Link) field.input.Link.remove()
-        this.inputs.slice(this.inputs.indexOf(field.input), 1)
+        this.inputs.splice(this.inputs.indexOf(field.input), 1)
+    }
+
+    unbindFieldInput(field){
+        field.value = null
+        if(field.input.Link) field.input.Link.remove()
     }
 
     addFieldInput(field){
@@ -84,6 +90,11 @@ export default class FilterBuilder extends EventTarget {
         field.input = input
         input.addEventListener('link', (data)=>{
             this.updateInput(input)
+        })
+        input.addEventListener('click', ()=>{
+            this.unbindFieldInput(field)
+            Builder.Instance.filterBuilders.map(fb => fb.updateFilterSelectors())
+            Builder.Instance.update()
         })
         this.inputs.push(input)
         return input
@@ -301,7 +312,6 @@ export default class FilterBuilder extends EventTarget {
 
     updatePreview(){
         this.previewContainer.innerHTML = ""
-        //if(!this.isAllInputConnected) return;
         this.previewElement = Builder.Instance.testElement.cloneNode(true)
         this.previewElement.style.filter = `url(#${this.filter.name + "_preview"})`
         this.previewContainer.appendChild(this.previewElement)
@@ -336,7 +346,7 @@ export default class FilterBuilder extends EventTarget {
         return Object.fromEntries(this.getFilterInputFields().map(f => [f.key, this.getFieldValue(f)]))
     }
     getFilterInputFields(){
-        return Object.values(this.fields).filter(f => f.config.type == "filter")
+        return this.fields ? Object.values(this.fields).filter(f => f.config.type == "filter"): []
     }
     getInputBuilders(){
         let inputs = this.GraphBox?.inputs

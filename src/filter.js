@@ -2,7 +2,7 @@ import Utils from "./utils"
 
 export default class Filter {
     constructor(type="feGaussianBlur", attributes={}, name=null){
-        this.name = name || Utils.getUuid("filter")
+        this.name = name !== null ? name : Utils.getUuid(this.constructor.name)
         this.attributes = attributes
         this.element = this.createSVGElement(type, attributes)
         this.element.setAttribute('result', this.name)
@@ -25,12 +25,9 @@ export default class Filter {
         this.filters.push(filter)
         this.element.appendChild(filter.element)
     }
-    addFilterFromHTML(html){
-        // customize
-        console.log(html)
-    }
+
     removeFilter(filter){
-        this.filter.slice(filter.indexOf(filter), 1)
+        this.filters.splice(this.filters.indexOf(filter), 1)
         if(this.element.contains(filter.element)) filter.element.remove()
     }
 

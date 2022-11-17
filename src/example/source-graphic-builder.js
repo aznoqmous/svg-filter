@@ -10,6 +10,9 @@ export default class SourceGraphicBuilder {
     build(){
         this.element = Builder.Instance.createElement("div", { class: "filter source"}, Builder.Instance.filtersContainer)
         this.element.filterBuilder = this
+        this.label = Builder.Instance.createElement('div', { class:"label"}, this.element)
+        this.name = Builder.Instance.createElement('div', {class:"name"}, this.label)
+        this.name.innerHTML = "Source"
         this.previewContainer = Builder.Instance.createElement("div", {class:"preview"}, this.element)
         this.previewElement = Builder.Instance.testElement.cloneNode(true)
         this.previewContainer.appendChild(this.previewElement)

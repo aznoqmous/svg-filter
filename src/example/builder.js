@@ -281,9 +281,14 @@ export default class Builder {
         let fbs = inputs.map(i => i.Link?.output?.GraphBox?.element?.filterBuilder).filter(i => i)
         fbs.map(fb => {
             if(fb.constructor == SourceGraphicBuilder) return;
-            fb.level = level
-            currentTree.push(fb)
-            return this.treeWalkStep(fb, currentTree, level+1)
+            if(currentTree.includes(fb)) {
+                if(level > fb.level) fb.level = level
+            }
+            else {
+                fb.level = level
+                currentTree.push(fb)
+            }
+            currentTree = this.treeWalkStep(fb, currentTree, level+1)
         })
         return currentTree
     }
@@ -355,7 +360,7 @@ export default class Builder {
         
         let groups = []
         this.filterBuilders.map(fb => {
-            if(fb.GraphBox.outputs[0]?.Links.length == 1){
+            if(fb.GraphBox.outputs[0]?.Links?.length == 1){
                 let linked = fb.GraphBox.outputs[0].Links[0].input.GraphBox.element.filterBuilder
                 let group = [fb, linked]
                 if(group.includes(this.resultBuilder)) return;
@@ -364,8 +369,8 @@ export default class Builder {
         })
         
         let parentRect = this.container.getBoundingClientRect()
-        let sourceWidth = this.sourceGraphicBuilder.GraphBox.element.getBoundingClientRect().width + 10
-        let resultWidth = this.resultBuilder.GraphBox.element.getBoundingClientRect().width + 10
+        let sourceWidth = this.sourceGraphicBuilder.GraphBox.element.getBoundingClientRect().width + 30
+        let resultWidth = this.resultBuilder.GraphBox.element.getBoundingClientRect().width + 30
         let usableWidth = parentRect.width - sourceWidth - resultWidth
         this.sourceGraphicBuilder.GraphBox.Draggable.setPosition(new Vector2(0,0))
         this.filterBuilders.map((fb,i) => {
