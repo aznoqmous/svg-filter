@@ -6,7 +6,7 @@ export default class FilterImageBuilder extends FilterBuilder
     constructor(){
         super("Image", FilterImage, {
             href: {
-                type: "text"
+                type: "file"
             },
             x: {},
             y: {},

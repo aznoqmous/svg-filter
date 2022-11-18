@@ -5,13 +5,11 @@ import "../scss/style.scss"
 import Keyboard from "./example/Keyboard"
 import Menu from "./example/Menu"
 document.addEventListener('DOMContentLoaded', ()=>{
-
     let b = new Builder(document.querySelectorAll('.examples > img')[0])
     Mouse.bind()
     Keyboard.bind()
     new Menu()
-
-    b.importFromHTML(
+    /*b.importFromHTML(
         `
         <svg version="1.1" id="Ebene_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 
@@ -66,7 +64,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
           <text class="filtered" x="50" y="200">splash!</text>
       </svg>
         `
-    )
+    )*/
 })
 
 export default class Blob {

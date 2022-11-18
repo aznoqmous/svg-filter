@@ -229,10 +229,27 @@ export default class FilterBuilder extends EventTarget {
         delete attributes.tagName
         delete attributes.element
         let element = Builder.Instance.createElement(tagName, attributes, container)
-        element.addEventListener('input', ()=> Builder.Instance.update())
-        element.value = this.filter[key]
+        
         element.config = config
         element.key = key
+        switch(element.type) {
+            case "file":
+                element._value = this.filter[key]
+                let reader = new FileReader()
+                reader.addEventListener('load', ()=> {
+                    element._value = reader.result
+                    Builder.Instance.update()
+
+                })
+                element.addEventListener('input', ()=>{
+                    reader.readAsDataURL(element.files[0])
+                })
+                break;
+            default:
+                element.value = this.filter[key]
+                element.addEventListener('input', ()=> Builder.Instance.update())
+                break;
+        }
         switch(tagName){
             case "select":
                 element.config.value = this.filter[key]
@@ -286,7 +303,7 @@ export default class FilterBuilder extends EventTarget {
             let value = field.selectedOptions.length ? field.selectedOptions[0].value : null
             return Builder.Instance.getFilterByName(value)
         }
-        
+        if(field.type == "file") return field._value
         let value;
         switch(field.tagName){
             case "select":

@@ -40,9 +40,6 @@ export default class SourceGraphicBuilder {
     }
     handleFileSelect(file){
         let reader = new FileReader()
-        reader.onprogress = (e)=>{
-            console.log((Math.floor(e.loaded / e.total ) * 100).toFixed(2) + '%')
-        }
         reader.onloadend = (e)=>{
             if (e.target.readyState == FileReader.DONE) {
                 let image = document.createElement('img')

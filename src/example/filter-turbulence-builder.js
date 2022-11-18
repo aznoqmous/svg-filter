@@ -6,12 +6,20 @@ export default class FilterTurbulenceBuilder extends FilterBuilder
 {
     constructor(){
         super("Turbulence", FilterTurbulence, {
-            baseFrequency: {
+            baseFrequencyX: {
                 step: 0.001
             },
-            numOctaves: {}
+            baseFrequencyY: {
+                step: 0.001
+            },
+            numOctaves: {},
+            type: {
+                element: "select",
+                options: {
+                    fractalNoise: "fractalNoise",
+                    turbulence: "turbulence",
+                }
+            }
         })
     }
-
-
 }

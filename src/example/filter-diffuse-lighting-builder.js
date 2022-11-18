@@ -8,6 +8,10 @@ export default class FilterDiffuseLightingBuilder extends FilterBuilder
 {
     constructor(){
         super("Diffuse Lighting", FilterDiffuseLighting, {
+            in: {
+                element: "select",
+                type: "filter"
+            },
             lightingColor: {
                 type: "text"
             },

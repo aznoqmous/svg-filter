@@ -8,6 +8,10 @@ export default class FilterSpecularLightingBuilder extends FilterBuilder
 {
     constructor(){
         super("Specular Lighting", FilterSpecularLighting, {
+            in: {
+                element: "select",
+                type: "filter"
+            },
             lightingColor: {
                 type: "text"
             },
@@ -15,6 +19,9 @@ export default class FilterSpecularLightingBuilder extends FilterBuilder
             specularConstant: {},
             specularExponent: {}
         })
+        
+        
+        
     }
 
     render(){
@@ -22,8 +29,16 @@ export default class FilterSpecularLightingBuilder extends FilterBuilder
             point: new FilterPointLight(this.filter.name + "_point"),
             spot: new FilterSpotLight(this.filter.name + "_spot") 
         }
+        this.fieldsConfiguration.lightSelect = {
+            element: "select",
+            options: {
+                point: "point",
+                spot: "spot"
+            }
+        }
         super.render()
-
+        
+        /*
         this.lightSelect = Builder.Instance.createSelect(
             Object.fromEntries(Object.keys(this.lights).map(key=> [key,key])),
             this.settings
@@ -32,36 +47,49 @@ export default class FilterSpecularLightingBuilder extends FilterBuilder
             this.buildLightSettings()
             Builder.Instance.update()
         })
+        */
+    }
+    update(){
         this.buildLightSettings()
+        super.update()
     }
 
     buildLightSettings(){
-        this.filter.setLight(this.lights[this.lightSelect.selectedOptions[0].value])
+        if(this.filter.light === this.lights[this.getFieldValue(this.fields.lightSelect)]) return;
+        this.filter.setLight(this.lights[this.getFieldValue(this.fields.lightSelect)])
 
         if(this.lightSettings) this.lightSettings.remove()
 
         this.lightSettings = Builder.Instance.createElement("div", {}, this.settings)
         this.lightInputs = {}
-        this.lightInputs.x = this.createInput({
+        this.lightInputs.x = this.createLightField("x", {
             type: "number",
             value: this.filter.light.x
         }, this.lightSettings)
-        this.lightInputs.y = this.createInput({
+        this.lightInputs.y = this.createLightField("y", {
             type: "number",
             value: this.filter.light.y
         }, this.lightSettings)
-        this.lightInputs.z = this.createInput({
+        this.lightInputs.z = this.createLightField("z", {
             type: "number",
             value: this.filter.light.z
         }, this.lightSettings)
         
         if(this.filter.light == this.lights.spot){
-            this.lightInputs.limitingConeAngle =  this.createInput({
+            this.lightInputs.limitingConeAngle =  this.createLightField("limitingConeAngle", {
                 type: "number",
                 value: this.filter.light.limitingConeAngle,
                 step: 0.5
             }, this.lightSettings)
         }
+    }
+
+    createLightField(key, config, parent=null){
+        let container = Builder.Instance.createElement('div', {class: `input-group`}, parent)
+        let label = Builder.Instance.createElement('strong', {}, container)
+        label.innerHTML = key
+        let input = this.createInput(config, container)
+        return input
     }
 
     onUpdate(){

@@ -33,6 +33,11 @@ export default class FilterConvolveMatrix extends Filter {
         this.element.setAttribute('kernelMatrix', v.join(' '))
     }
     get kernelMatrix(){
-        return this.element.getAttribute('kernelMatrix').split(' ')
+        let v = this.element.getAttribute('kernelMatrix')
+        if(v) {
+            v = v.split(' ').filter(a => a).join(' ')
+            v = v.replace(/\r/g, "").replace(/\n/g, "")
+        }
+        return v.split(' ')
     }
 }

@@ -63,8 +63,8 @@ export default class Builder {
             FilterMergeBuilder,
             
             /* Lighting */
-            //FilterSpecularLightingBuilder,
-            //FilterDiffuseLightingBuilder,
+            FilterSpecularLightingBuilder,
+            FilterDiffuseLightingBuilder,
         ]
         this.filterBuilderLabels = []
         this.filterBuilderFilterClasses = []
@@ -315,7 +315,7 @@ export default class Builder {
 
     setTestElement(element){
         this.testElement = element
-        let builders = [this.sourceGraphicBuilder, this.resultBuilder, ...this.filterBuilders]
+        let builders = [this.sourceGraphicBuilder, ...this.filterBuilders]
         builders.map(b => {
             let container = b.previewElement.parentElement
             let style = b.previewElement.getAttribute('style')
@@ -324,6 +324,7 @@ export default class Builder {
             b.previewElement.style = style
             container.appendChild(b.previewElement)
         })
+        this.resultBuilder.updatePreview()
     }
 
     reset(){
@@ -358,6 +359,12 @@ export default class Builder {
         lastFilter.connectTo(this.resultBuilder)
         this.filterBuilders.map(fb => fb.minimize())
         this.reArrangeBuilders()
+        setTimeout(()=> {
+            window.scrollTo({
+                left: 0,
+                top: 0
+              })
+        })
     }
 
     reArrangeBuilders(){
