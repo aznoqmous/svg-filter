@@ -1,3 +1,4 @@
+import FilterImage from "../filter-image"
 import SvgFilter from "../svg-filter"
 import Utils from "../utils"
 import Draggable from "./Draggable"
@@ -11,12 +12,14 @@ import FilterDisplacementMapBuilder from "./filter-displacement-map-builder"
 import FilterFloodBuilder from "./filter-flood-builder"
 import FilterGaussianBlurBuilder from "./filter-gaussian-blur-builder"
 import FilterHueRotateBuilder from "./filter-hue-rotate-builder"
+import FilterImageBuilder from "./filter-image-builder"
 import FilterLuminanceToAlphaBuilder from "./filter-luminance-to-alpha-builder"
 import FilterMergeBuilder from "./filter-merge-builder"
 import FilterMorphologyBuilder from "./filter-morphology-builder"
 import FilterOffsetBuilder from "./filter-offset-builder"
 import FilterSaturateBuilder from "./filter-saturate-builder"
 import FilterSpecularLightingBuilder from "./filter-specular-lighting-builder"
+import FilterTileBuilder from "./filter-tile-builder"
 import FilterTurbulenceBuilder from "./filter-turbulence-builder"
 import GraphBox from "./GraphBox"
 import Keyboard from "./Keyboard"
@@ -36,10 +39,16 @@ export default class Builder {
             FilterGaussianBlurBuilder,
             FilterOffsetBuilder,
 
+            /* Fills */
             FilterFloodBuilder,
-            
-            FilterColorMatrixBuilder,
+            FilterImageBuilder,
+            FilterTurbulenceBuilder,
+
+            /* Matrices */
+            FilterTileBuilder,
             FilterConvolveMatrixBuilder,
+            FilterDisplacementMapBuilder,
+            FilterColorMatrixBuilder,
             
             FilterSaturateBuilder,
             FilterHueRotateBuilder,
@@ -56,10 +65,6 @@ export default class Builder {
             /* Lighting */
             //FilterSpecularLightingBuilder,
             //FilterDiffuseLightingBuilder,
-
-            FilterTurbulenceBuilder,
-            FilterDisplacementMapBuilder,
-
         ]
         this.filterBuilderLabels = []
         this.filterBuilderFilterClasses = []
@@ -361,9 +366,10 @@ export default class Builder {
         let groups = []
         this.filterBuilders.map(fb => {
             if(fb.GraphBox.outputs[0]?.Links?.length == 1){
-                let linked = fb.GraphBox.outputs[0].Links[0].input.GraphBox.element.filterBuilder
+                let linkedGraphbox = fb.GraphBox.outputs[0].Links[0].input.GraphBox
+                //if(linkedGraphbox.inputs.length > 1) return;
+                let linked = linkedGraphbox.element.filterBuilder
                 let group = [fb, linked]
-                if(group.includes(this.resultBuilder)) return;
                 groups.push([fb, linked])
             }
         })
@@ -372,17 +378,23 @@ export default class Builder {
         let sourceWidth = this.sourceGraphicBuilder.GraphBox.element.getBoundingClientRect().width + 30
         let resultWidth = this.resultBuilder.GraphBox.element.getBoundingClientRect().width + 30
         let usableWidth = parentRect.width - sourceWidth - resultWidth
+        
+        let filterWidth = 150
+
+        let maxLevel = this.filterBuilders.map(fb => fb.level).max()
         this.sourceGraphicBuilder.GraphBox.Draggable.setPosition(new Vector2(0,0))
         this.filterBuilders.map((fb,i) => {
-            fb.GraphBox.Draggable.setPosition(new Vector2(sourceWidth + i*usableWidth/this.filterBuilders.length, 0))
+            fb.GraphBox.Draggable.setPosition(new Vector2(sourceWidth + (maxLevel-fb.level)*filterWidth, 0))
         })
-        this.resultBuilder.GraphBox.Draggable.setPosition(new Vector2(sourceWidth + usableWidth, 0))
+        this.resultBuilder.GraphBox.Draggable.setPosition(new Vector2(sourceWidth + (maxLevel+1)*filterWidth, 0))
 
         groups.map((group, y) => {
             group.map((fb, x)=>{
                 fb.GraphBox.Draggable.setPosition(new Vector2(fb.GraphBox.Draggable.currentOffset.x, y * 160))
             })
         })
+        
+
 
         this.filterBuilders.map(fb => fb.GraphBox.update())
     }

@@ -66,8 +66,9 @@ export default class SvgFilter {
         let attributes = html.getAttributeNames()
         attributes.map(attr => {
             let value = html.getAttribute(attr)
+            if(attr == "xlink:href") return filter.element.setAttribute("href", value)
             if(attr == "result") filter.name = value
-            filter.element.setAttribute(attr, value)
+            if(value) filter.element.setAttribute(attr, value)
         })
         ;[...html.children].map(h => filter.addFilter(this.createFilterFromHTML(h)))
         return filter

@@ -1,3 +1,4 @@
+import "./example/extensions"
 import Builder from "./example/builder"
 import Mouse from "./example/Mouse"
 import "../scss/style.scss"
@@ -8,94 +9,64 @@ document.addEventListener('DOMContentLoaded', ()=>{
     let b = new Builder(document.querySelectorAll('.examples > img')[0])
     Mouse.bind()
     Keyboard.bind()
-    b.importFromHTML(`
-    <svg>
-    <defs>
-        <filter id="testFilter">
-            <feGaussianBlur stdDeviation="10" result="FilterGaussianBlur1" in="SourceGraphic">
-            </feGaussianBlur>
-            <feOffset dx="10" dy="10" result="FilterOffset1" in="FilterColorMatrix1">
-            </feOffset>
-            <feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 19 -10" result="FilterColorMatrix1" in="FilterGaussianBlur1">
-            </feColorMatrix>
-            <feColorMatrix type="hueRotate" values="90" result="FilterHueRotate1" in="FilterOffset1">
-            </feColorMatrix>
-            <feMerge result="FilterMerge1" in1="FilterHueRotate1" in2="FilterColorMatrix1">
-                <feMergeNode in="FilterHueRotate1" result="">
-                </feMergeNode>
-                <feMergeNode in="FilterColorMatrix1" result="">
-                </feMergeNode>
-            </feMerge>
-        </filter>
-    </defs>
-</svg>
-    `)
     new Menu()
-    /*b.importFromHTML(
+
+    b.importFromHTML(
         `
-<svg>
-    <defs>
-    <filter id="filter">
-    <!-- COLOR -->
-    <feFlood flood-color="#73DCFF" flood-opacity="0.75" result="COLOR-blu"></feFlood>
-    <feFlood flood-color="#9673FF" flood-opacity="0.4" result="COLOR-red"></feFlood>
-    <!-- COLOR END -->
+        <svg version="1.1" id="Ebene_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 
-    <!-- Texture -->
-    <feTurbulence baseFrequency=".05" type="fractalNoise" numOctaves="3" seed="0" result="Texture_10"></feTurbulence>
-    <feColorMatrix type="matrix" values="0 0 0 0 0,
-    0 0 0 0 0,
-    0 0 0 0 0,
-    0 0 0 -2.1 1.1" in="Texture_10" result="Texture_20"></feColorMatrix>
-
-    <feColorMatrix result="Texture_30" type="matrix" values="0 0 0 0 0,
-    0 0 0 0 0,
-    0 0 0 0 0,
-    0 0 0 -1.7 1.8" in="Texture_10"></feColorMatrix>
-    <!-- Texture -->
-
-    <!-- FILL -->
-    <feOffset dx="-3" dy="4" in="SourceAlpha" result="FILL_10"></feOffset>
-    <feDisplacementMap scale="17" in="FILL_10" in2="Texture_10" result="FILL_20"></feDisplacementMap>
-    <feComposite operator="in" in="Texture_30" in2="FILL_20" result="FILL_40"></feComposite>
-    <feComposite operator="in" in="COLOR-blu" in2="FILL_40" result="FILL_50"></feComposite>
-    <!-- FILL END-->
-
-    <!-- OUTLINE -->
-    <feMorphology operator="dilate" radius="3" in="SourceAlpha" result="OUTLINE_10"></feMorphology>
-    <feComposite operator="out" in="OUTLINE_10" in2="SourceAlpha" result="OUTLINE_20"></feComposite>
-    <feDisplacementMap scale="7" in="OUTLINE_20" in2="Texture_10" result="OUTLINE_30"></feDisplacementMap>
-    <feComposite operator="arithmetic" k2="-1" k3="1" in="Texture_20" in2="OUTLINE_30" result="OUTLINE_40"></feComposite>
-    <!-- OUTLINE END-->
-
-    <!-- BEVEL OUTLINE -->
-    <feConvolveMatrix order="8,8" divisor="1" kernelMatrix="1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 " in="SourceAlpha" result="BEVEL_10"></feConvolveMatrix>
-    <feMorphology operator="dilate" radius="2" in="BEVEL_10" result="BEVEL_20"></feMorphology>
-    <feComposite operator="out" in="BEVEL_20" in2="BEVEL_10" result="BEVEL_30"></feComposite>
-    <feDisplacementMap scale="7" in="BEVEL_30" in2="Texture_10" result="BEVEL_40"></feDisplacementMap>
-    <feComposite operator="arithmetic" k2="-1" k3="1" in="Texture_20" in2="BEVEL_40" result="BEVEL_50"></feComposite>
-    <feOffset dx="-7" dy="-7" in="BEVEL_50" result="BEVEL_60"></feOffset>
-    <feComposite operator="out" in="BEVEL_60" in2="OUTLINE_10" result="BEVEL_70"></feComposite>
-    <!-- BEVEL OUTLINE END -->
-
-    <!-- BEVEL FILL -->
-    <feOffset dx="-9" dy="-9" in="BEVEL_10" result="BEVEL-FILL_10"></feOffset>
-    <feComposite operator="out" in="BEVEL-FILL_10" in2="OUTLINE_10" result="BEVEL-FILL_20"></feComposite>
-    <feDisplacementMap scale="17" in="BEVEL-FILL_20" in2="Texture_10" result="BEVEL-FILL_30"></feDisplacementMap>
-    <feComposite operator="in" in="COLOR-red" in2="BEVEL-FILL_30" result="BEVEL-FILL_50"></feComposite> <!-- -->
-    <!-- BEVEL FILL END-->
-
-    <feMerge result="merge2">
-     <feMergeNode in="BEVEL-FILL_50"></feMergeNode>
-     <feMergeNode in="BEVEL_70"></feMergeNode>
-     <feMergeNode in="FILL_50"></feMergeNode>
-      <feMergeNode in="OUTLINE_40"></feMergeNode>
-    </feMerge>
-  </filter>
-    </defs>
-</svg>
+        <defs>
+          <filter id="filter" width="150%" height="160%" x="-25%" y="-25%">
+          <!-- COLORS -->
+            <feFlood flood-color="#16B5FF" result="COLOR-blue"></feFlood>‚
+            <feFlood flood-color="#9800FF" result="COLOR-violet"></feFlood>
+            <feFlood flood-color="#A64DFF" result="COLOR-violet-light"></feFlood>
+          <!-- COLORS END -->
+    
+          <!-- BOTTOM SPLASH -->
+            <feTurbulence baseFrequency="0.05" type="fractalNoise" numOctaves="1" seed="2" result="BOTTOM-SPLASH_10"></feTurbulence>
+            <feGaussianBlur stdDeviation="6.5" in="SourceAlpha" result="BOTTOM-SPLASH_20"></feGaussianBlur>
+            <feDisplacementMap scale="420" in="BOTTOM-SPLASH_20" in2="BOTTOM-SPLASH_10" result="BOTTOM-SPLASH_30"></feDisplacementMap>
+            <feComposite operator="in" in="COLOR-blue" in2="BOTTOM-SPLASH_30" result="BOTTOM-SPLASH_40"></feComposite>
+          <!-- BOTTOM END -->
+    
+          <!-- MIDDLE SPLASH -->
+            <feTurbulence baseFrequency="0.1" type="fractalNoise" numOctaves="1" seed="1" result="MIDDLE-SPLASH_10"></feTurbulence>
+            <feGaussianBlur in="SourceAlpha" stdDeviation="0.1" result="MIDDLE-SPLASH_20"></feGaussianBlur>
+            <feDisplacementMap in="MIDDLE-SPLASH_20" in2="MIDDLE-SPLASH_10" scale="25" result="MIDDLE-SPLASH_30"></feDisplacementMap>
+            <feComposite in="COLOR-violet-light" in2="MIDDLE-SPLASH_30" operator="in" result="MIDDLE-SPLASH_40"></feComposite>
+          <!-- MIDDLE END -->
+    
+          <!-- TOP SPLASH -->
+            <feTurbulence baseFrequency="0.07" type="fractalNoise" numOctaves="1" seed="1" result="TOP-SPLASH_10"></feTurbulence>
+            <feGaussianBlur stdDeviation="3.5" in="SourceAlpha" result="TOP-SPLASH_20"></feGaussianBlur>
+            <feDisplacementMap scale="220" in="TOP-SPLASH_20" in2="TOP-SPLASH_10" result="TOP-SPLASH_30"></feDisplacementMap>
+            <feComposite operator="in" in="COLOR-violet" in2="TOP-SPLASH_30" result="TOP-SPLASH_40"></feComposite>
+          <!-- TOP END -->
+    
+          <!-- LIGHT EFFECTS -->
+            <feMerge result="LIGHT-EFFECTS_10">
+              <feMergeNode in="BOTTOM-SPLASH_40"></feMergeNode>
+              <feMergeNode in="MIDDLE-SPLASH_40"></feMergeNode>
+              <feMergeNode in="TOP-SPLASH_40"></feMergeNode>
+            </feMerge>
+            <feColorMatrix type="matrix" values="0 0 0 0 0,
+            0 0 0 0 0,
+            0 0 0 0 0,
+            0 0 0 1 0" in="LIGHT-EFFECTS_10" result="LIGHT-EFFECTS_20"></feColorMatrix>
+            <feGaussianBlur stdDeviation="2" in="LIGHT-EFFECTS_20" result="LIGHT-EFFECTS_30"></feGaussianBlur>
+            <feSpecularLighting surfaceScale="5" specularConstant=".75" specularExponent="30" lighting-color="#white" in="LIGHT-EFFECTS_30" result="LIGHT-EFFECTS_40">
+              <fePointLight x="-50" y="-100" z="400"></fePointLight>
+            </feSpecularLighting>
+            <feComposite operator="in" in="LIGHT-EFFECTS_40" in2="LIGHT-EFFECTS_20" result="LIGHT-EFFECTS_50"></feComposite>
+            <feComposite operator="arithmetic" k1="0" k2="1" k3="1" k4="0" in="LIGHT-EFFECTS_10" in2="LIGHT-EFFECTS_50" result="LIGHT-EFFECTS_60"></feComposite>
+          </filter>
+          <!-- LIGHT EFFECTS END -->
+        </defs>
+          <text class="filtered" x="50" y="200">splash!</text>
+      </svg>
         `
-    )*/
+    )
 })
 
 export default class Blob {

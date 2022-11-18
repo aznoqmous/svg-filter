@@ -5,6 +5,8 @@ export default class Filter {
         this.name = name !== null ? name : Utils.getUuid(this.constructor.name)
         this.attributes = attributes
         this.element = this.createSVGElement(type, attributes)
+        this.cleanAttributes()
+
         this.element.setAttribute('result', this.name)
 
         this.filters = []
@@ -36,5 +38,11 @@ export default class Filter {
         for(let key in attributes) element.setAttribute(key, attributes[key])
         if(parent) parent.appendChild(element)
         return element
+    }
+    cleanAttributes(){
+        let properties = Object.getOwnPropertyNames(this.constructor.prototype)
+        for(let key in this.attributes) {
+            if(properties.includes(key)) this[key] = this[key]
+        }
     }
 }

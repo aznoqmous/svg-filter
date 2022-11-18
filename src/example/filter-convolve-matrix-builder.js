@@ -12,13 +12,9 @@ export default class FilterConvolveMatrixBuilder extends FilterBuilder
             kernelMatrix: {
                 element: "table",
                 type: "number",
-                columns: ["X", "Y", "Z"],
-                rows: ["X", "Y", "Z"],
-                value: [
-                    3, 0, 0,
-                    0, 0, 0,
-                    0, 0, -3
-                ]
+                columns: ()=> this.filter ? Array(this.filter.columns).fill('') : [],
+                rows: ()=> this.filter ? Array(this.filter.rows).fill('') : [],
+                value: ()=> this.filter ? Array(this.filter.columns).fill('').map(c => Array(this.filter.rows).fill(0).join(',')).join(',').split(',') : ""
             }
         })
     }
@@ -26,4 +22,5 @@ export default class FilterConvolveMatrixBuilder extends FilterBuilder
         let values = [...this.fields.kernelMatrix.querySelectorAll('input')].map(input => input.value)
         this.filter.kernelMatrix = values
     }
+
 }

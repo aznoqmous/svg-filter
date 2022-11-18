@@ -148,16 +148,18 @@ export default class FilterBuilder extends EventTarget {
         let builder = new filterBuilderClass()
         this.class = filterBuilderClass
         this.label = Builder.Instance.filterBuilderLabels[Builder.Instance.filterBuilderTypes.indexOf(this.class)]
-        this.fieldsConfiguration = builder.fieldsConfiguration
         this.fields = {}
+        
+        this.setFilter(builder.class)
+        builder.filter = this.filter
 
         Object.getOwnPropertyNames(filterBuilderClass.prototype)
         .map(property => {
             if(property == "constructor") return;
             this[property] = filterBuilderClass.prototype[property]
         })
-
-        this.setFilter(builder.class)
+        
+        this.fieldsConfiguration = builder.fieldsConfiguration
     }
 
     render(){
@@ -233,25 +235,31 @@ export default class FilterBuilder extends EventTarget {
         element.key = key
         switch(tagName){
             case "select":
+                element.config.value = this.filter[key]
                 this.setFilterSelectorOptions(element)
                 break;
-            case "table": 
-                let cols = attributes.columns.length
-                let rows = attributes.rows.length + 1
-                let colTexts = ["", ...attributes.columns]
-                let rowTexts = ["", ...attributes.rows]
+            case "table":
+                let columns = isCallable(attributes.columns) ? attributes.columns() : attributes.columns
+                let rows = isCallable(attributes.rows) ? attributes.rows() : attributes.rows
+                let value = isCallable(attributes.value) ? attributes.value() : attributes.value
+                if(this.filter.columns) columns = Array(this.filter.columns).fill('')
+                if(this.filter.rows) rows = Array(this.filter.rows).fill('')
+                let colsLength = columns.length
+                let rowsLength = rows.length + 1
+                let colTexts = ["", ...columns]
+                let rowTexts = ["", ...rows]
                 let currentIndex = 0
-                for(let y = 0; y < rows; y++){
+                for(let y = 0; y < rowsLength; y++){
                     let row = Builder.Instance.createElement("tr", {}, element)
                     row.innerHTML = `<th>${rowTexts[y]}</th>`
                     if(!y) {
-                        row.innerHTML += "<th>" + attributes.columns.join('</th><th>') + "</th>"
+                        row.innerHTML += "<th>" + columns.join('</th><th>') + "</th>"
                         continue
                     }
-                    for(let x = 0; x < cols; x++){
+                    for(let x = 0; x < colsLength; x++){
                         let cell = Builder.Instance.createElement('td', {}, row)
                         let input = Builder.Instance.createElement('input', attributes, cell)
-                        input.value = attributes.value[currentIndex]
+                        input.value = this.filter[key].length > 1 ? this.filter[key][currentIndex] : value[currentIndex]
                         currentIndex++
                     }
                 }
@@ -313,7 +321,7 @@ export default class FilterBuilder extends EventTarget {
     updatePreview(){
         this.previewContainer.innerHTML = ""
         this.previewElement = Builder.Instance.testElement.cloneNode(true)
-        this.previewElement.style.filter = `url(#${this.filter.name + "_preview"})`
+        this.previewElement.style.filter = `url("#${this.filter.name + "_preview"}")`
         this.previewContainer.appendChild(this.previewElement)
         let filters = this.getPreviousFilters()
         filters.push(this.filter)

@@ -17,6 +17,8 @@ import FilterSpotLight from "./filter-spot-light";
 import FilterTurbulence from "./filter-turbulence";
 import FilterFlood from "./filter-flood";
 import FilterConvolveMatrix from "./filter-convolve-matrix";
+import FilterImage from "./filter-image";
+import FilterTile from "./filter-tile";
 
 export const SvgFilterTypes = [
     FilterBlend,
@@ -38,7 +40,9 @@ export const SvgFilterTypes = [
     FilterTurbulence,
     FilterMerge,
     FilterMergeNode,
-    FilterFlood
+    FilterFlood,
+    FilterImage,
+    FilterTile
 ]
 
 export class SvgFilterTypesManager {

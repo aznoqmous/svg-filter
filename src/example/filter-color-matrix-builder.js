@@ -13,8 +13,8 @@ export default class FilterColorMatrixBuilder extends FilterBuilder
             values: {
                 element: "table",
                 type: "number",
-                columns: ["R", "G", "B", "A", "1"],
-                rows: ["R", "G", "B", "A"],
+                columns: "RGBA1".split(''),
+                rows: "RGBA".split(''),
                 value: [
                     1,0,0,0,0,
                     0,1,0,0,0,
