@@ -366,6 +366,7 @@ export default class FilterBuilder extends EventTarget {
     get isAllInputConnected(){
         return !Object.values(this.getFilterInputValues()).filter(v => !v).length
     }
+    set isAllInputConnected(v){}
 
     getFilterInputValues(){
         return Object.fromEntries(this.getFilterInputFields().map(f => [f.key, this.getFieldValue(f)]))
@@ -399,5 +400,15 @@ export default class FilterBuilder extends EventTarget {
     minimize(){
         this.element.classList.add('closed')
         this.GraphBox.update()
+    }
+
+    clone(){
+        let clone = new FilterBuilder()
+        clone.loadBuilder(this.class)
+        clone.build()
+        Object.keys(this.fields)
+        .map(k => clone.fields[k] = this.fields[k])
+        clone.update()
+        return clone
     }
 }

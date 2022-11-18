@@ -215,6 +215,18 @@ export default class Builder {
         return filterBuilder
     }
 
+    dupplicateFilterBuilder(filterBuilder, position=null){
+        if(!position) position = new Vector2()
+
+        let clone  = filterBuilder.clone()
+        clone.build()
+        this.filterBuilders.push(clone)
+        this.filtersContainer.appendChild(clone.element)
+
+        clone.GraphBox.Draggable.setPosition(position)
+        return clone
+    }
+
     getFilterBuilderByClass(constructor){
         return this.filterBuilderTypes[this.filterBuilderFilterClasses.indexOf(constructor)]
     }

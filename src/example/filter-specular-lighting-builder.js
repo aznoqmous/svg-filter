@@ -19,9 +19,6 @@ export default class FilterSpecularLightingBuilder extends FilterBuilder
             specularConstant: {},
             specularExponent: {}
         })
-        
-        
-        
     }
 
     render(){
@@ -37,17 +34,6 @@ export default class FilterSpecularLightingBuilder extends FilterBuilder
             }
         }
         super.render()
-        
-        /*
-        this.lightSelect = Builder.Instance.createSelect(
-            Object.fromEntries(Object.keys(this.lights).map(key=> [key,key])),
-            this.settings
-        )
-        this.lightSelect.addEventListener('change', ()=> {
-            this.buildLightSettings()
-            Builder.Instance.update()
-        })
-        */
     }
     update(){
         this.buildLightSettings()

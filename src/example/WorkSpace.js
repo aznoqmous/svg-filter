@@ -43,6 +43,11 @@ export default class WorkSpace {
                     })
                 }
             }
+            if(Keyboard.isDown("Control")){
+                if(e.key == "c") this.copy()
+                if(e.key == "v") this.paste()
+            }
+            
         })
         Keyboard.bindKey(' ', 
             ()=>{
@@ -109,6 +114,32 @@ export default class WorkSpace {
     endDrag(){
         this.isDragging = false
         this.selectable.isActive = true
+    }
+
+    copy(){
+        this.clipBoard = this.selectable.selectedElements.filter(e => e.tagName == "FORM")
+    }
+    paste(){
+        if(!this.clipBoard || !this.clipBoard.length) return;
+        let refPosition = this.clipBoard[0].Draggable.currentOffset
+        console.log(refPosition)
+        this.clipBoard.map(c => {
+            let newPosition = c.Draggable.currentOffset.clone().substract(refPosition)
+            let clone = Builder.Instance.dupplicateFilterBuilder(c.filterBuilder, Mouse.position)
+            clone.GraphBox.Draggable.setPosition(newPosition.add(Mouse.position))
+            c.filterBuilder.cloned = clone
+        })
+        this.clipBoard.map(c => {
+            let inputs = c.filterBuilder.getInputBuilders()
+            inputs.map(i => {
+                if(i.cloned) i.cloned.connectTo(c.filterBuilder.cloned)
+            })
+        })
+        this.selectable.unselectAll()
+        this.clipBoard.map(c => {
+            this.selectable.select(c.filterBuilder.cloned.element)
+            c.filterBuilder.cloned = null
+        })
     }
 
     static get Instance(){
