@@ -172,13 +172,29 @@ export default class FilterBuilder extends EventTarget {
         this.fields = {}
         Object.keys(this.fieldsConfiguration).map(key => {
             let config = this.fieldsConfiguration[key]
+
+            let hide = false
+            if(config.show) {
+                hide = Object.keys(config.show).map(k => this.getFieldValue(this.fields[k]).match(config.show[k])).filter(v => !v).length > 0
+            }
+            if(hide) return;
             this.fields[key] = this.createField(key, config)
         })
     }
     updateFields(){
         Object.keys(this.fieldsConfiguration).map(key => {
             let config = this.fieldsConfiguration[key]
-            if(!this.fields[key]) this.fields[key] = this.createField(key, config)
+            let hide = false
+            if(config.show) {
+                hide = Object.keys(config.show).map(k => this.getFieldValue(this.fields[k]).match(config.show[k])).filter(v => !v).length > 0
+            }
+            if(hide){
+                if(this.fields[key]) {
+                    this.fields[key].parentElement.remove()
+                    delete this.fields[key]
+                }
+            }
+            else if(!this.fields[key]) this.fields[key] = this.createField(key, config)
         })
     }
 
@@ -238,8 +254,8 @@ export default class FilterBuilder extends EventTarget {
                 let reader = new FileReader()
                 reader.addEventListener('load', ()=> {
                     element._value = reader.result
+                    this.dispatchEvent(new Event('fileLoaded'))
                     Builder.Instance.update()
-
                 })
                 element.addEventListener('input', ()=>{
                     reader.readAsDataURL(element.files[0])

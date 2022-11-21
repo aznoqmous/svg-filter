@@ -5,6 +5,7 @@ import Draggable from "./Draggable"
 import FilterBlendBuilder from "./filter-blend-builder"
 import FilterBuilder from "./filter-builder"
 import FilterColorMatrixBuilder from "./filter-color-matrix-builder"
+import FilterComponentTransferBuilder from "./filter-component-transfer-builder"
 import FilterCompositeBuilder from "./filter-composite-builder"
 import FilterConvolveMatrixBuilder from "./filter-convolve-matrix-builder"
 import FilterDiffuseLightingBuilder from "./filter-diffuse-lighting-builder"
@@ -65,6 +66,8 @@ export default class Builder {
             /* Lighting */
             FilterSpecularLightingBuilder,
             FilterDiffuseLightingBuilder,
+
+            FilterComponentTransferBuilder
         ]
         this.filterBuilderLabels = []
         this.filterBuilderFilterClasses = []
@@ -383,14 +386,22 @@ export default class Builder {
         this.reorderBuilders()
         
         let groups = []
-        this.filterBuilders.map(fb => {
+        let levels = []
+        this.activeFilterBuilders.reverse().map(fb => {
+            if(fb.GraphBox.inputs.length){
+                    let inputs = fb.GraphBox.inputs.filter(i => i.classList.contains('linked')).map(i => i.Link.output.GraphBox.element.filterBuilder)
+                    fb.inputBuildersGroup = inputs
+            }
+            if(!levels[fb.level]) levels.push([])
+            levels[fb.level].push(fb)
+            /*
             if(fb.GraphBox.outputs[0]?.Links?.length == 1){
                 let linkedGraphbox = fb.GraphBox.outputs[0].Links[0].input.GraphBox
                 //if(linkedGraphbox.inputs.length > 1) return;
                 let linked = linkedGraphbox.element.filterBuilder
                 let group = [fb, linked]
                 groups.push([fb, linked])
-            }
+            }*/
         })
         
         let parentRect = this.container.getBoundingClientRect()
@@ -398,20 +409,27 @@ export default class Builder {
         let resultWidth = this.resultBuilder.GraphBox.element.getBoundingClientRect().width + 30
         let usableWidth = parentRect.width - sourceWidth - resultWidth
         
-        let filterWidth = 150
+        let filterWidth = 180 + 50
+        let filterHeight = 180
 
         let maxLevel = this.filterBuilders.map(fb => fb.level).max()
         this.sourceGraphicBuilder.GraphBox.Draggable.setPosition(new Vector2(0,0))
-        this.filterBuilders.map((fb,i) => {
+        this.activeFilterBuilders.map((fb,i) => {
             fb.GraphBox.Draggable.setPosition(new Vector2(sourceWidth + (maxLevel-fb.level)*filterWidth, 0))
         })
         this.resultBuilder.GraphBox.Draggable.setPosition(new Vector2(sourceWidth + (maxLevel+1)*filterWidth, 0))
 
-        groups.map((group, y) => {
+        levels.map((fbs,i) => {
+            fbs.map((fb, y)=>{
+                fb.GraphBox.Draggable.setPosition(new Vector2(fb.GraphBox.Draggable.currentOffset.x, y * filterHeight))
+            })
+        })
+
+        /*groups.reverse().map((group, y) => {
             group.map((fb, x)=>{
                 fb.GraphBox.Draggable.setPosition(new Vector2(fb.GraphBox.Draggable.currentOffset.x, y * 160))
             })
-        })
+        })*/
         
 
 

@@ -34,6 +34,7 @@ export default class Popup {
     }
 
     static registerInstance(popup){
+        this.Instance = popup
         if(!this.instances) this.instances = []
         this.instances.push(popup)
     }

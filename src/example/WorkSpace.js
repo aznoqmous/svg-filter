@@ -44,8 +44,10 @@ export default class WorkSpace {
                 }
             }
             if(Keyboard.isDown("Control")){
-                if(e.key == "c") this.copy()
-                if(e.key == "v") this.paste()
+                if(e.key == "c") this.copy(e)
+                if(e.key == "x") this.cut(e)
+                if(e.key == "v") this.paste(e)
+                if(e.key == "a") this.selectAll(e)
             }
             
         })
@@ -116,13 +118,19 @@ export default class WorkSpace {
         this.selectable.isActive = true
     }
 
-    copy(){
+    copy(e){
+        e.preventDefault()
         this.clipBoard = this.selectable.selectedElements.filter(e => e.tagName == "FORM")
     }
-    paste(){
+    cut(e){
+        e.preventDefault()
+        this.clipBoard = this.selectable.selectedElements.filter(e => e.tagName == "FORM")
+        this.clipBoard.map(c => c.filterBuilder.delete())
+    }
+    paste(e){
+        e.preventDefault()
         if(!this.clipBoard || !this.clipBoard.length) return;
         let refPosition = this.clipBoard[0].Draggable.currentOffset
-        console.log(refPosition)
         this.clipBoard.map(c => {
             let newPosition = c.Draggable.currentOffset.clone().substract(refPosition)
             let clone = Builder.Instance.dupplicateFilterBuilder(c.filterBuilder, Mouse.position)
@@ -142,6 +150,30 @@ export default class WorkSpace {
         })
     }
 
+    selectAll(e){
+        e.preventDefault()
+        this.selectable.unselectAll()
+        this.selectable.selectedElements.map(e => this.selectable.select(e))
+    }
+
+    alignLeft(){
+        let avgLeft = this.selectable.selectedElements.map(el => el.Draggable.currentOffset.x).min()
+        this.selectable.selectedElements.map(el => {
+            el.Draggable.currentOffset.x = avgLeft
+            el.Draggable.applyCurrentOffset()
+            return el
+        })
+        .map(el => el.filterBuilder.GraphBox.update())
+    }
+    alignTop(){
+        let avgTop = this.selectable.selectedElements.map(el => el.Draggable.currentOffset.y).min()
+        this.selectable.selectedElements.map(el => {
+            el.Draggable.currentOffset.y = avgTop
+            el.Draggable.applyCurrentOffset()
+            return el
+        })
+        .map(el => el.filterBuilder.GraphBox.update())
+    }
     static get Instance(){
         if(!this._instance) this._instance = new this()
         return this._instance

@@ -1,4 +1,5 @@
 import FilterBlend from "./filter-blend"
+import FilterFunc from "./filter-func"
 import { SvgFilterTypes, SvgFilterTypesManager } from "./svg-filter-types"
 
 export default class SvgFilter {
@@ -45,6 +46,7 @@ export default class SvgFilter {
 
     getFilterClassFromHTML(html){
         let filters = SvgFilterTypesManager.getFiltersByTagName(html.tagName)
+        if(!filters.length) filters = SvgFilterTypesManager.getFilterByMatchingName(html.tagName)
         let filtersAttributes = filters.map(f => {
             return {
                 f, 
@@ -63,6 +65,9 @@ export default class SvgFilter {
     
     createFilterFromHTML(html){
         let filter = this.getFilterClassFromHTML(html)
+        if(filter.constructor === FilterFunc){
+            filter = new FilterFunc(filter.name, html.tagName)
+        }
         let attributes = html.getAttributeNames()
         attributes.map(attr => {
             let value = html.getAttribute(attr)

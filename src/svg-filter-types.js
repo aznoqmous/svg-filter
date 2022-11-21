@@ -19,6 +19,8 @@ import FilterFlood from "./filter-flood";
 import FilterConvolveMatrix from "./filter-convolve-matrix";
 import FilterImage from "./filter-image";
 import FilterTile from "./filter-tile";
+import FilterComponentTransfer from "./filter-component-transfer";
+import FilterFunc from "./filter-func";
 
 export const SvgFilterTypes = [
     FilterBlend,
@@ -42,11 +44,16 @@ export const SvgFilterTypes = [
     FilterMergeNode,
     FilterFlood,
     FilterImage,
-    FilterTile
+    FilterTile,
+    FilterComponentTransfer,
+    FilterFunc
 ]
 
 export class SvgFilterTypesManager {
     static getFiltersByTagName(tagName){
         return SvgFilterTypes.map(f => new f()).filter(f => f.element.tagName == tagName)
+    }
+    static getFilterByMatchingName(matchingName){
+        return SvgFilterTypes.map(f => new f()).filter(f => matchingName.match(f.element.tagName) || f.element.tagName.match(matchingName))
     }
 }

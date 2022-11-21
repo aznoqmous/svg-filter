@@ -3,10 +3,48 @@
         <h2>Export</h2>
         <i class="material-symbols-outlined">close</i>
     </div>
-    <div class="content">
+    <form class="content">
         <label for="filterName">Filter name</label>
         <input type="text" id="filterName">
-        <label for="export">Result</label>
-        <textarea id="export" onclick="this.select()"></textarea>
-    </div>
+
+        <div class="input-row">
+            <label for="resultX">X</label>
+            <input name="x" type="text" id="resultX" value="0">
+        </div>
+        <div class="input-row">
+            <label for="resultY">Y</label>
+            <input name="y" type="text" id="resultY" value="0">
+        </div>
+        <div class="input-row">
+            <label for="resultWidth">Width</label>
+            <input name="width" type="text" id="resultWidth" value="100%">
+        </div>
+        <div class="input-row">
+            <label for="resultHeight">Height</label>
+            <input name="height" type="text" id="resultHeight" value="100%">
+        </div>
+
+        <div class="input-row">
+            <label for="filterUnits">Filter units</label>
+            <select name="filterUnits" id="filterUnits">
+                <option value="userSpaceOnUse" selected>userSpaceOnUse</option>
+                <option value="objectBoundingBox">objectBoundingBox</option>
+            </select>
+        </div>
+        <div class="input-row">
+            <label for="primitiveUnits">Primitive units</label>
+            <select name="primitiveUnits" id="primitiveUnits">
+                <option value="userSpaceOnUse" selected>userSpaceOnUse</option>
+                <option value="objectBoundingBox">objectBoundingBox</option>
+            </select>
+        </div>
+    
+        <div class="input-row">
+            <label for="minified">Minified</label>
+            <input id="minified" type="checkbox">
+        </div>
+
+        <label for="result">Result</label>
+        <textarea id="result" onclick="this.select()"></textarea>
+    </form>
 </div>

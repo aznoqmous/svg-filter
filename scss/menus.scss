@@ -47,13 +47,14 @@
             width: 100%;
             padding: 0.5rem;
         }
-        button, textarea, input {
+        button, textarea, input, select {
             background: $color_dark;
             border-radius: $border_radius;
             outline: none;
             margin-top: 0.5rem;
             color: white;
             border: 1px solid $color_grey;
+            padding: 0.5rem;
         }
         button {
             padding: 0.5rem 1rem;
@@ -62,6 +63,13 @@
             transition: all 0.2s ease;
             &:hover {
                 background: $color_grey;
+            }
+        }
+        .input-row {
+            width: 100%;
+            @include row(space-between, center);
+            > * {
+                width: unset;
             }
         }
     }

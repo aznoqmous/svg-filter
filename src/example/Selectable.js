@@ -1,5 +1,6 @@
 import Builder from "./builder"
 import Vector2 from "./Vector2"
+import Keyboard from "./Keyboard"
 
 export default class Selectable {
     constructor(element, opts={}){
@@ -42,10 +43,15 @@ export default class Selectable {
 
     handleMouseDown(e){
         if(!this.isActive) return;
+        if(document.activeElement.blur) document.activeElement.blur()
         let overlappingElements = this.selectableElements.filter(se => se.contains(e.target) || se == e.target)
         let targetElement =  overlappingElements.length ? overlappingElements[0] : null
-        if(this.selectedElements.length && !targetElement) this.unselectAll()
-        if(this.selectedElements.length && !this.selectedElements.includes(targetElement)) this.unselectAll()
+        
+        if(Keyboard.isUp("Shift")){
+            if(this.selectedElements.length && !targetElement) this.unselectAll()
+            if(this.selectedElements.length && !this.selectedElements.includes(targetElement)) this.unselectAll()
+        }
+        
         if(targetElement) return this.select(targetElement)
 
         e.preventDefault()

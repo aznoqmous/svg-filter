@@ -3,10 +3,23 @@ import Popup from "./controllers/Popup";
 import PopupExport from "./controllers/PopupExport";
 import PopupHelp from "./controllers/PopupHelp";
 import PopupImport from "./controllers/PopupImport";
+import WorkSpace from "./WorkSpace";
 
 export default class Menu {
     constructor(){
         this.items = {
+            alignLeft: {
+                icon: "align_horizontal_left",
+                click: (e)=>{
+                    WorkSpace.Instance.alignLeft()
+                }
+            },
+            alignTop: {
+                icon: "align_vertical_top",
+                click: (e)=>{
+                    WorkSpace.Instance.alignTop()
+                }
+            },
             import: {
                 label: "import",
                 icon: 'file_upload',
@@ -40,7 +53,7 @@ export default class Menu {
             let item = Builder.Instance.createElement('li', {}, this.container)
             let icon = Builder.Instance.createElement('i', {class: "material-symbols-outlined"}, item)
             icon.innerHTML = i.icon
-            item.innerHTML += i.label
+            if(i.label) item.innerHTML += i.label
             if(i.click) item.addEventListener('click', (e)=> i.click(e))
             if(i.popup) {
                 i.popup = new i.popup()
