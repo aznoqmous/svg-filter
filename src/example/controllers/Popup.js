@@ -7,6 +7,7 @@ export default class Popup {
 
     constructor(){
         Popup.registerInstance(this)
+        this.constructor.registerInstance(this)
         
         this.template = new Template(this.constructor.strTemplate)
         this.bind()

@@ -1,6 +1,7 @@
 import FilterImage from "../filter-image"
 import SvgFilter from "../svg-filter"
 import Utils from "../utils"
+import PopupLiveTest from "./controllers/PopupLiveTest"
 import Draggable from "./Draggable"
 import FilterBlendBuilder from "./filter-blend-builder"
 import FilterBuilder from "./filter-builder"
@@ -287,6 +288,8 @@ export default class Builder {
         .replace(/'/g, "&#39;")
         this.resultContainer.innerHTML = html
         this.svgFilter.name = this.testName
+
+        PopupLiveTest.Instance.send()
     }
 
     reorderBuilders(){

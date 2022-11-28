@@ -1,0 +1,23 @@
+<div class="popup">
+    <div class="header">
+        <h2>Live test</h2>
+        <i class="material-symbols-outlined">close</i>
+    </div>
+    <form class="content">
+        <label for="url">Url to test</label>
+        <input type="text" id="url">
+        <button>Test</button>
+
+        <code>
+            window.addEventListener("message", (e)=> {
+                if(e.origin == "{{origin}}"){
+                    if(window.svgFilter){
+                        window.svgFilter.remove();
+                    }
+                    document.body.innerHTML += e.data;
+                    window.svgFilter = document.querySelector("body > svg:last-of-type");
+                }
+            })
+        </code>
+    </form>
+</div>

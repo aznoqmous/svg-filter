@@ -50,8 +50,19 @@ export default class Vector2 {
         return this
     }
 
+    normalize(){
+        let magnitude = this.magnitude
+        this.x /= magnitude
+        this.y /= magnitude
+        return this
+    }
+
+    get normalized(){
+        return this.clone().normalize()
+    }
+
     get magnitude(){
-        return Math.pow(2, this.x) + Math.pow(2, this.y)
+        return Math.pow(this.x, 2) + Math.pow(this.y, 2)
     }
 
     get sqrMagnitude(){

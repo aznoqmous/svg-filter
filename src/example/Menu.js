@@ -3,6 +3,7 @@ import Popup from "./controllers/Popup";
 import PopupExport from "./controllers/PopupExport";
 import PopupHelp from "./controllers/PopupHelp";
 import PopupImport from "./controllers/PopupImport";
+import PopupLiveTest from "./controllers/PopupLiveTest";
 import WorkSpace from "./WorkSpace";
 
 export default class Menu {
@@ -37,11 +38,17 @@ export default class Menu {
                     Builder.Instance.reset()
                 }
             },
+            test: {
+                label: "Test",
+                icon: 'live_tv',
+                popup: PopupLiveTest
+            },
             help: {
                 label: "",
                 icon: 'help',
                 popup: PopupHelp
-            }
+            },
+            
         }
         this.build()
     }
