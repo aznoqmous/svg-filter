@@ -5,7 +5,8 @@ export default class FilterTurbulence extends Filter {
         super("feTurbulence", {
             baseFrequency, 
             numOctaves,
-            type: "turbulence"
+            type: "turbulence",
+            seed: 0
         }, name)
     }
 
@@ -45,5 +46,12 @@ export default class FilterTurbulence extends Filter {
     }
     set type(v){
         this.element.setAttribute('type', v)
+    }
+
+    get seed(){
+        return this.element.getAttribute('seed')
+    }
+    set seed(v){
+        this.element.setAttribute('seed', v)
     }
 }

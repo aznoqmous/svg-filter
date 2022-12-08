@@ -1,7 +1,12 @@
 import Filter from "./filter"
 
 export default class FilterSpecularLighting extends Filter {
-    constructor(name, lightingColor="#FFF", surfaceScale=1, specularConstant=1.5, specularExponent=4){
+    constructor(name, 
+        lightingColor="#FFF", 
+        surfaceScale=5, 
+        specularConstant=0.75, 
+        specularExponent=20
+    ){
         super("feSpecularLighting", {
             lightingColor,
             surfaceScale,

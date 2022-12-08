@@ -37,9 +37,10 @@ export default class WorkSpace {
         window.addEventListener('keydown', (e)=>{
             if(Popup.activePopup) return;
             if(e.key == "Delete" || e.key == "Backspace"){
+                if(document.activeElement.tagName == "INPUT") return;
                 if(this.selectable.selectedElements.length){
                     this.selectable.selectedElements.map(e => {
-                        e.filterBuilder.delete()
+                        if(e.filterBuilder.delete) e.filterBuilder.delete()
                     })
                 }
             }

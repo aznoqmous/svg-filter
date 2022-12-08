@@ -13,6 +13,7 @@ export default class FilterTurbulenceBuilder extends FilterBuilder
                 step: 0.001
             },
             numOctaves: {},
+            seed: {},
             type: {
                 element: "select",
                 options: {

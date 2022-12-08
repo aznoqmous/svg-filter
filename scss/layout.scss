@@ -40,6 +40,9 @@ body {
         padding: 1rem;
         z-index: 1;
         margin-bottom: 0;
+        .preview {
+            margin-top: 0;
+        }
     }
     > .examples {
         display: none;
