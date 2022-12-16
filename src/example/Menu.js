@@ -9,14 +9,23 @@ import WorkSpace from "./WorkSpace";
 export default class Menu {
     constructor(){
         this.items = {
+            rearrange: {
+                icon: "reorder",
+                title: "Rearrange",
+                click: (e)=>{
+                    Builder.Instance.reArrangeBuilders()
+                }
+            },
             alignLeft: {
                 icon: "align_horizontal_left",
+                title: "Align selected items to left",
                 click: (e)=>{
                     WorkSpace.Instance.alignLeft()
                 }
             },
             alignTop: {
                 icon: "align_vertical_top",
+                title: "Align selected items to top",
                 click: (e)=>{
                     WorkSpace.Instance.alignTop()
                 }
