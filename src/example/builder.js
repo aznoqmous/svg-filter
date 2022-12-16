@@ -388,7 +388,6 @@ export default class Builder {
     reArrangeBuilders(){
         this.reorderBuilders()
         
-        let groups = []
         let levels = []
         this.activeFilterBuilders.reverse().map(fb => {
             if(fb.GraphBox.inputs.length){
@@ -397,14 +396,6 @@ export default class Builder {
             }
             if(!levels[fb.level]) levels.push([])
             levels[fb.level].push(fb)
-            /*
-            if(fb.GraphBox.outputs[0]?.Links?.length == 1){
-                let linkedGraphbox = fb.GraphBox.outputs[0].Links[0].input.GraphBox
-                //if(linkedGraphbox.inputs.length > 1) return;
-                let linked = linkedGraphbox.element.filterBuilder
-                let group = [fb, linked]
-                groups.push([fb, linked])
-            }*/
         })
         
         let parentRect = this.container.getBoundingClientRect()
@@ -427,14 +418,6 @@ export default class Builder {
                 fb.GraphBox.Draggable.setPosition(new Vector2(fb.GraphBox.Draggable.currentOffset.x, y * filterHeight))
             })
         })
-
-        /*groups.reverse().map((group, y) => {
-            group.map((fb, x)=>{
-                fb.GraphBox.Draggable.setPosition(new Vector2(fb.GraphBox.Draggable.currentOffset.x, y * 160))
-            })
-        })*/
-        
-
 
         this.filterBuilders.map(fb => fb.GraphBox.update())
     }
