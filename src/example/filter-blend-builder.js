@@ -14,6 +14,6 @@ export default class FilterBlendBuilder extends FilterBuilder
                 element: "select",
                 type: "filter"
             }
-        })
+        }, "call_merge")
     }
 }

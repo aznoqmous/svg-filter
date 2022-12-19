@@ -21,6 +21,6 @@ export default class FilterTurbulenceBuilder extends FilterBuilder
                     turbulence: "turbulence",
                 }
             }
-        })
+        }, "water")
     }
 }

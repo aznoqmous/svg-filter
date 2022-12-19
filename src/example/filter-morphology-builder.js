@@ -18,6 +18,6 @@ export default class FilterMorphologyBuilder extends FilterBuilder {
             radius: {
                 step: 0.5
             }
-        })
+        }, "blur_circular")
     }
 }

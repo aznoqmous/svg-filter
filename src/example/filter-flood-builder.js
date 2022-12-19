@@ -11,6 +11,6 @@ export default class FilterFloodBuilder extends FilterBuilder
             floodOpacity: {
                 step: 0.1
             }
-        })
+        }, "format_color_fill")
     }
 }

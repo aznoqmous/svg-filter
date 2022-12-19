@@ -12,7 +12,7 @@ export default class FilterImageBuilder extends FilterBuilder
             y: {},
             width: {},
             height: {}
-        })
+        }, "image")
     }
     build(){
         super.build()

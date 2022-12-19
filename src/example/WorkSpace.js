@@ -96,9 +96,10 @@ export default class WorkSpace {
         this.offset.substract(dist.multiplyBy(pow))
     }
 
-    handleMouseDown(){
+    handleMouseDown(e){
         if(Popup.activePopup) return;
-        if(Keyboard.isUp(' ')) return;
+        if(e.button == 0 && Keyboard.isUp(' ')) return;
+        if(e.button == 2) return;
         this.selectable.endDrag()
         this.selectable.isActive = false
         this.startDragPosition = Mouse.position.divideBy(this.effectiveZoom).substract(this.offset)
@@ -107,10 +108,12 @@ export default class WorkSpace {
     handleMouseMove(){
         if(Popup.activePopup) return;
         if(!this.isDragging) return;
+        this.container.style.cursor = "grab"
         this.offset = Mouse.position.divideBy(this.effectiveZoom).substract(this.startDragPosition)
         this.applyTransform()
     }
     handleMouseUp(){
+        this.container.style.cursor = null
         if(Popup.activePopup) return;
         this.endDrag()
     }

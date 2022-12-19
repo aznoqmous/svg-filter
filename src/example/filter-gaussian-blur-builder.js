@@ -11,6 +11,6 @@ export default class FilterGaussianBlurBuilder extends FilterBuilder
                 type: "filter"
             },
             blur: {}
-        })
+        }, 'blur_on')
     }
 }

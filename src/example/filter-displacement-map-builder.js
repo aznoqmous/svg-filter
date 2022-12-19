@@ -15,11 +15,23 @@ export default class FilterDisplacementMapBuilder extends FilterBuilder
             },
             scale: {},
             xChannelSelector: {
-                type: "text"
+                element: "select",
+                options: {
+                    R: "red",
+                    G: "green",
+                    B: "blue",
+                    A: "alpha"
+                }
             },
             yChannelSelector: {
-                type: "text"
+                element: "select",
+                options: {
+                    R: "red",
+                    G: "green",
+                    B: "blue",
+                    A: "alpha"
+                }
             }
-        })
+        }, "apps")
     }
 }

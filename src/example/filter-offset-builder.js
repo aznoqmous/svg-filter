@@ -12,6 +12,6 @@ export default class FilterOffsetBuilder extends FilterBuilder
             },
             x: {},
             y: {}
-        })
+        }, "filter_none")
     }
 }

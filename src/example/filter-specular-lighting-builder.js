@@ -18,7 +18,7 @@ export default class FilterSpecularLightingBuilder extends FilterBuilder
             surfaceScale: {},
             specularConstant: {},
             specularExponent: {}
-        })
+        }, "lightbulb")
     }
 
     render(){

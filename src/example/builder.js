@@ -40,25 +40,19 @@ export default class Builder {
         this.filterBuilderTypes = [
             FilterGaussianBlurBuilder,
             FilterOffsetBuilder,
-
-            /* Fills */
-            FilterFloodBuilder,
-            FilterImageBuilder,
-            FilterTurbulenceBuilder,
-
+            
             /* Matrices */
-            FilterTileBuilder,
             FilterConvolveMatrixBuilder,
             FilterDisplacementMapBuilder,
             FilterColorMatrixBuilder,
             
-            FilterSaturateBuilder,
             FilterHueRotateBuilder,
+            FilterSaturateBuilder,
             FilterLuminanceToAlphaBuilder,
             
             /* Dilate / Erode */
             FilterMorphologyBuilder,
-
+            
             /* Blend */
             FilterCompositeBuilder,
             FilterBlendBuilder,
@@ -67,15 +61,22 @@ export default class Builder {
             /* Lighting */
             FilterSpecularLightingBuilder,
             FilterDiffuseLightingBuilder,
-
+            
+            /* Fills */
+            FilterFloodBuilder,
+            FilterImageBuilder,
+            FilterTurbulenceBuilder,
+            FilterTileBuilder,
             FilterComponentTransferBuilder
         ]
         this.filterBuilderLabels = []
         this.filterBuilderFilterClasses = []
+        this.filterBuilderIcons = []
         this.filterBuilderTypes.map(c => {
             c = new c()
             this.filterBuilderLabels.push(c.label)
             this.filterBuilderFilterClasses.push(c.class)
+            this.filterBuilderIcons.push(c.icon)
         })
         this.filterBuilders = []
         this.activeFilterBuilders = []
@@ -106,6 +107,7 @@ export default class Builder {
         this.sourceGraphicBuilder.build()
         this.resultBuilder = new ResultBuilder()
         this.resultBuilder.build()
+        this.resultBuilder.GraphBox.Draggable.setPosition({x: window.innerWidth - 232, y: 0})
 
         this.buildFilterSelect()
         this.hideFilterSelect()
@@ -134,7 +136,7 @@ export default class Builder {
         let filters = []
         this.filterBuilderLabels.map((label, i)=> {
             let filter = this.createElement("li", {"data-key": i}, this.filterSelect)
-            filter.innerHTML = label
+            filter.innerHTML = `<i class="material-symbols-outlined">${this.filterBuilderIcons[i]}</i><span>${label}</span>`
             filter.addEventListener('click', ()=>{
                 this.addFilterBuilder(Mouse.position, this.filterBuilderTypes[i])
             })

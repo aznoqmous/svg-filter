@@ -1,6 +1,7 @@
 import Builder from "./builder"
 import Vector2 from "./Vector2"
 import Keyboard from "./Keyboard"
+import FilterFunc from "../filter-func"
 
 export default class Selectable {
     constructor(element, opts={}){
@@ -42,6 +43,7 @@ export default class Selectable {
     }
 
     handleMouseDown(e){
+        if(e.button != 0) return;
         if(!this.isActive) return;
         if(document.activeElement.blur) document.activeElement.blur()
         let overlappingElements = this.selectableElements.filter(se => se.contains(e.target) || se == e.target)

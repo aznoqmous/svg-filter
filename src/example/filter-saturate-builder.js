@@ -11,6 +11,6 @@ export default class FilterSaturateBuilder extends FilterBuilder {
             value: {
                 step: .1
             }
-        })
+        }, "tonality")
     }
 }

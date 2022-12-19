@@ -16,7 +16,7 @@ export default class FilterConvolveMatrixBuilder extends FilterBuilder
                 rows: ()=> this.filter ? Array(this.filter.rows).fill('') : [],
                 value: ()=> this.filter ? Array(this.filter.columns).fill('').map(c => Array(this.filter.rows).fill(0).join(',')).join(',').split(',') : ""
             }
-        })
+        }, "apps")
     }
     onUpdate(){
         let values = [...this.fields.kernelMatrix.querySelectorAll('input')].map(input => input.value)

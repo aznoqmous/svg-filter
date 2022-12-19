@@ -25,6 +25,6 @@ export default class FilterCompositeBuilder extends FilterBuilder
                     lighter: "lighter"
                 }
             }
-        })
+        }, "join_left")
     }
 }

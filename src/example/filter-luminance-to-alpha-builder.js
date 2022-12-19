@@ -8,6 +8,6 @@ export default class FilterLuminanceToAlphaBuilder extends FilterBuilder {
                 element: "select",
                 type: "filter"
             }
-        })
+        }, "background_replace")
     }
 }

@@ -22,7 +22,7 @@ export default class FilterColorMatrixBuilder extends FilterBuilder
                     0,0,0,19,-10
                 ]
             }
-        })
+        }, "palette")
     }
     onUpdate(){
         let values = [...this.fields.values.querySelectorAll('input')].map(input => input.value)

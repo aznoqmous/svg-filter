@@ -5,13 +5,14 @@ import SourceGraphicBuilder from "./source-graphic-builder"
 import WorkSpace from "./WorkSpace"
 
 export default class FilterBuilder extends EventTarget {
-    constructor(label, filterClass=null, fieldsConfiguration={}){
+    constructor(label, filterClass=null, fieldsConfiguration={}, icon="filter_alt"){
         super()
         this.label = label
         this.class = filterClass
         this.inputFilterName = null
         this.fieldsConfiguration = fieldsConfiguration
         this.inputs = []
+        this.icon = icon
     }
 
     build(){
@@ -24,7 +25,7 @@ export default class FilterBuilder extends EventTarget {
         this.previewContainer = this.element.querySelector('.preview')
         
         this.name = this.element.querySelector('.name')
-        this.name.innerHTML = this.label
+        this.name.innerHTML = `<i class="material-symbols-outlined">${this.icon}</i>${this.label}`
         
         Builder.Instance.filterBuilderLabels.map((label,i) => {
             this.element.typeSelect.add(new Option(label, i, this.label == label, this.label == label))
@@ -41,7 +42,8 @@ export default class FilterBuilder extends EventTarget {
         this.outputsContainer = Builder.Instance.createElement("div", { class: "outputs"}, this.element)
         
         
-        this.toggle = this.element.querySelector('.label i')
+        this.toggle = this.element.querySelector('.label i.toggle')
+
         this.toggle.addEventListener('click', ()=>{
             this.element.classList.toggle('closed')
             this.GraphBox.update()
@@ -148,6 +150,7 @@ export default class FilterBuilder extends EventTarget {
         let builder = new filterBuilderClass()
         this.class = filterBuilderClass
         this.label = Builder.Instance.filterBuilderLabels[Builder.Instance.filterBuilderTypes.indexOf(this.class)]
+        this.icon = Builder.Instance.filterBuilderIcons[Builder.Instance.filterBuilderTypes.indexOf(this.class)]
         this.fields = {}
         
         this.setFilter(builder.class)
@@ -234,7 +237,7 @@ export default class FilterBuilder extends EventTarget {
     createField(key, config){
         let container = Builder.Instance.createElement('div', {class: `input-group`, "data-key":key}, this.settings)
         if(config.type == "filter") container.classList.add('input')
-        let label = Builder.Instance.createElement('strong', {}, container)
+        let label = Builder.Instance.createElement('span', {}, container)
         label.innerHTML = key
         let attributes = Object.assign({
             element: "input",

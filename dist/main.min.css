@@ -152,14 +152,19 @@ body {
     justify-content: space-between;
     cursor: pointer; }
     .filter .label .name {
-      font-weight: bold; }
-    .filter .label i {
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 0.2rem; }
+      .filter .label .name i {
+        font-size: 1rem; }
+    .filter .label i.toggle {
       font-weight: bold;
       font-style: normal;
       margin-left: 0.3em;
       font-size: 1.3em;
       margin-top: -0.3em; }
-      .filter .label i::before {
+      .filter .label i.toggle::before {
         content: "-"; }
   .filter .inputs, .filter .outputs {
     position: absolute;
@@ -183,8 +188,7 @@ body {
     display: none; }
   .filter .column .input-group {
     display: flex;
-    justify-content: space-between;
-    margin-top: 0.5rem; }
+    justify-content: space-between; }
     .filter .column .input-group strong {
       width: 5rem; }
     .filter .column .input-group.input {
@@ -194,12 +198,15 @@ body {
       width: 5rem; }
     .filter .column .input-group > table {
       border-collapse: collapse; }
+      .filter .column .input-group > table th {
+        padding-right: 0.2rem; }
       .filter .column .input-group > table td {
-        border: 1px solid #4c4c4c; }
+        border: 1px solid #686868; }
       .filter .column .input-group > table input {
         width: 2.5rem;
         border: none;
-        text-align: right; }
+        text-align: right;
+        border-radius: none; }
   .filter .outputs {
     left: unset;
     right: 0;
@@ -214,8 +221,8 @@ body {
   .filter .preview {
     display: inline-flex;
     justify-content: center;
-    width: 10rem;
-    height: 10rem;
+    width: 13rem;
+    height: 13rem;
     overflow: hidden;
     background-image: url(dd0efd02c72c989879be.png);
     background-size: 20%;
@@ -239,7 +246,10 @@ body {
     margin-bottom: 0.5rem; }
   .filter-select li {
     cursor: pointer;
-    list-style: none; }
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem; }
     .filter-select li:hover {
       font-weight: bold; }
     .filter-select li.hidden {

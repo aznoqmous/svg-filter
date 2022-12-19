@@ -6,7 +6,7 @@ import Builder from "./builder";
 export default class FilterMergeBuilder extends FilterBuilder
 {
     constructor(){
-        super("Merge", FilterMerge, {})
+        super("Merge", FilterMerge, {}, "call_merge")
     }
 
     render(){

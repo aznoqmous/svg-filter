@@ -9,6 +9,6 @@ export default class FilterHueRotateBuilder extends FilterBuilder {
                 type: "filter"
             },
             value: {}
-        })
+        }, "palette")
     }
 }

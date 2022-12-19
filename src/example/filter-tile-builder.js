@@ -13,6 +13,6 @@ export default class FilterTileBuilder extends FilterBuilder
             y: {},
             width: {},
             height: {}
-        })
+        }, "grid_view")
     }
 }

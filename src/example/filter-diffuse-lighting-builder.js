@@ -21,7 +21,7 @@ export default class FilterDiffuseLightingBuilder extends FilterBuilder
             diffuseConstant: {
                 step: 0.1
             }
-        })
+        }, "light_mode")
     }
 
     render(){
